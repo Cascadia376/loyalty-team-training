@@ -5,7 +5,6 @@ import {
   ArrowRight,
   BadgeCheck,
   CheckCircle2,
-  ChevronRight,
   Circle,
   ClipboardList,
   Crown,
@@ -345,7 +344,7 @@ const PATHS: PathDefinition[] = [
 function getInitialState(): StoredState {
   if (typeof window === 'undefined') {
     return {
-      activePath: null,
+      activePath: 'team',
       currentStepByPath: { team: 0, manager: 0 },
       scenarioAnswers: {},
       checklistState: {},
@@ -357,7 +356,7 @@ function getInitialState(): StoredState {
   const raw = window.localStorage.getItem(STORAGE_KEY);
   if (!raw) {
     return {
-      activePath: null,
+      activePath: 'team',
       currentStepByPath: { team: 0, manager: 0 },
       scenarioAnswers: {},
       checklistState: {},
@@ -381,7 +380,7 @@ function getInitialState(): StoredState {
     };
   } catch {
     return {
-      activePath: null,
+      activePath: 'team',
       currentStepByPath: { team: 0, manager: 0 },
       scenarioAnswers: {},
       checklistState: {},
@@ -402,6 +401,7 @@ export default function App() {
   const [checklistState, setChecklistState] = useState<Record<string, string[]>>({});
   const [acknowledgedSteps, setAcknowledgedSteps] = useState<string[]>([]);
   const [completedPaths, setCompletedPaths] = useState<PathKey[]>([]);
+  const [managerTapCount, setManagerTapCount] = useState(0);
 
   useEffect(() => {
     const initial = getInitialState();
@@ -466,7 +466,21 @@ export default function App() {
       <div className="mobile-frame">
         <header className="topbar">
           <div>
-            <p className="topbar-kicker">The Den Rewards</p>
+            <button
+              type="button"
+              className="secret-trigger"
+              onClick={() => {
+                const nextCount = managerTapCount + 1;
+                if (nextCount >= 5) {
+                  setActivePath('manager');
+                  setManagerTapCount(0);
+                  return;
+                }
+                setManagerTapCount(nextCount);
+              }}
+            >
+              <p className="topbar-kicker">The Den Rewards</p>
+            </button>
             <h1 className="topbar-title">Mobile Training Tool</h1>
           </div>
           <div className="status-pill">
@@ -477,9 +491,9 @@ export default function App() {
 
         {!activeDefinition || !currentStep ? (
           <HomeScreen
-            activePath={activePath}
             completedPaths={completedPaths}
-            onSelectPath={setActivePath}
+            onStartTraining={() => setActivePath('team')}
+            onOpenManager={() => setActivePath('manager')}
           />
         ) : (
           <PathExperience
@@ -549,70 +563,53 @@ export default function App() {
 }
 
 function HomeScreen({
-  activePath,
   completedPaths,
-  onSelectPath,
+  onStartTraining,
+  onOpenManager,
 }: {
-  activePath: PathKey | null;
   completedPaths: PathKey[];
-  onSelectPath: (path: PathKey) => void;
+  onStartTraining: () => void;
+  onOpenManager: () => void;
 }) {
+  const teamPath = PATHS.find((path) => path.key === 'team');
+  const teamComplete = completedPaths.includes('team');
+  const managerComplete = completedPaths.includes('manager');
+
+  if (!teamPath) {
+    return null;
+  }
+
   return (
     <main className="screen-content screen-content-home">
       <section className="hero-card">
         <p className="eyebrow">Train the trainer aligned</p>
-        <h2 className="hero-title">Choose the path that matches the job to be done.</h2>
+        <h2 className="hero-title">Floor-ready team training.</h2>
         <p className="hero-copy">
-          This tool is designed for phones first. It replaces passive briefing slides
-          with short practice modules that can be used on the floor or in a pre-shift huddle.
+          Short mobile modules to help staff deliver the invitation confidently,
+          handle yes or no smoothly, and keep the till moving.
         </p>
+        <div className="hero-actions">
+          <button type="button" className="hero-primary" onClick={onStartTraining}>
+            {teamComplete ? 'Resume Team Training' : 'Start Team Training'}
+            <ArrowRight size={18} />
+          </button>
+          <div className="hero-meta">
+            <span>{teamPath.steps.length} modules</span>
+            {teamComplete && (
+              <span className="mini-badge">
+                <CheckCircle2 size={14} />
+                {teamPath.completionLabel}
+              </span>
+            )}
+          </div>
+        </div>
       </section>
 
-      <section className="path-grid">
-        {PATHS.map((path) => {
-          const Icon = path.icon;
-          const isComplete = completedPaths.includes(path.key);
-          const isActive = activePath === path.key;
-
-          return (
-            <button
-              key={path.key}
-              type="button"
-              className={`path-card ${isActive ? 'path-card-active' : ''}`}
-              onClick={() => onSelectPath(path.key)}
-            >
-              <div className="path-card-top">
-                <div className="path-icon-wrap">
-                  <Icon size={22} />
-                </div>
-                {isComplete && (
-                  <span className="mini-badge">
-                    <CheckCircle2 size={14} />
-                    {path.completionLabel}
-                  </span>
-                )}
-              </div>
-              <p className="path-kicker">{path.kicker}</p>
-              <h3 className="path-title">{path.label}</h3>
-              <p className="path-copy">{path.description}</p>
-              <div className="path-meta">
-                <span>{path.steps.length} modules</span>
-                <ChevronRight size={16} />
-              </div>
-            </button>
-          );
-        })}
-      </section>
-
-      <section className="summary-card">
-        <p className="summary-title">What changed from the original briefing</p>
-        <ul className="bullet-list">
-          <li>Separate paths for team members and managers</li>
-          <li>Short modules built around action, not just reading</li>
-          <li>Completion based on practice and checks</li>
-          <li>Mobile-safe layout with thumb-first navigation</li>
-        </ul>
-      </section>
+      {managerComplete && (
+        <button type="button" className="manager-return" onClick={onOpenManager}>
+          Reopen manager tools
+        </button>
+      )}
     </main>
   );
 }

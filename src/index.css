@@ -55,6 +55,10 @@
   @apply mb-1 text-[10px] font-semibold uppercase tracking-[0.28em] text-brand-red;
 }
 
+.secret-trigger {
+  @apply rounded-md text-left;
+}
+
 .topbar-title {
   @apply font-display text-[1.7rem] font-semibold leading-none tracking-tight text-brand-brown;
 }
@@ -75,7 +79,6 @@
 }
 
 .hero-card,
-.summary-card,
 .module-card,
 .highlight-card,
 .prompt-card,
@@ -84,7 +87,6 @@
 }
 
 .hero-card,
-.summary-card,
 .module-card,
 .checklist-card {
   @apply px-4 py-4 shadow-sm;
@@ -112,44 +114,27 @@
   @apply text-[0.97rem] leading-7 text-brand-dark/82;
 }
 
-.path-grid {
-  @apply grid gap-3;
-}
-
-.path-card {
-  @apply rounded-[24px] border border-brand-brown/10 bg-white px-4 py-4 text-left shadow-sm transition;
-}
-
-.path-card-active {
-  @apply border-brand-red/25 bg-brand-red/5;
-}
-
-.path-card-top {
-  @apply mb-4 flex items-center justify-between gap-2;
-}
-
-.path-icon-wrap {
-  @apply inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-red text-white;
-}
-
 .path-kicker,
-.summary-title,
 .prompt-label,
 .highlight-label,
 .coach-note-title {
   @apply text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-red;
 }
 
-.path-title {
-  @apply mt-2 font-display text-2xl font-semibold text-brand-brown;
+.hero-actions {
+  @apply mt-5 space-y-3;
 }
 
-.path-copy {
-  @apply mt-2 text-[0.95rem] leading-7 text-brand-dark/72;
+.hero-primary {
+  @apply inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand-red px-5 py-4 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(215,35,35,0.22)] transition hover:bg-brand-red/90;
 }
 
-.path-meta {
-  @apply mt-4 flex items-center justify-between text-sm font-semibold text-brand-brown;
+.hero-meta {
+  @apply flex items-center justify-between gap-2 text-sm font-semibold text-brand-brown;
+}
+
+.manager-return {
+  @apply mx-auto block border-0 bg-transparent px-2 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-brand-brown/40;
 }
 
 .bullet-list {
