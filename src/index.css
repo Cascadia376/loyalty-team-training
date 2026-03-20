@@ -92,6 +92,10 @@
   @apply px-4 py-4 shadow-sm;
 }
 
+.hero-card {
+  @apply overflow-hidden;
+}
+
 .eyebrow {
   @apply mb-2 text-[10px] font-semibold uppercase tracking-[0.28em] text-brand-red;
 }
@@ -119,6 +123,58 @@
 .highlight-label,
 .coach-note-title {
   @apply text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-red;
+}
+
+.hero-brand-row {
+  @apply mb-4 flex items-center justify-between gap-3;
+}
+
+.hero-brand {
+  display: block;
+  object-fit: contain;
+}
+
+.hero-brand-cascadia {
+  width: 64px;
+  height: 64px;
+}
+
+.hero-brand-den {
+  width: 92px;
+  height: 92px;
+}
+
+.hero-art {
+  position: relative;
+  margin-top: 18px;
+  margin-bottom: 14px;
+  min-height: 220px;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at top right, rgba(215, 35, 35, 0.16), transparent 35%),
+    linear-gradient(180deg, rgba(242, 238, 231, 0.8), rgba(255, 255, 255, 0.9));
+  overflow: hidden;
+}
+
+.hero-bears {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  height: 220px;
+  object-fit: contain;
+  object-position: center bottom;
+}
+
+.hero-bear-accent {
+  position: absolute;
+  top: 14px;
+  right: -8px;
+  z-index: 1;
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  opacity: 0.16;
 }
 
 .hero-actions {

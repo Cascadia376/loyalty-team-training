@@ -3,7 +3,6 @@ import { AnimatePresence, motion } from 'motion/react';
 import {
   ArrowLeft,
   ArrowRight,
-  BadgeCheck,
   CheckCircle2,
   Circle,
   ClipboardList,
@@ -56,8 +55,6 @@ interface StoredState {
   acknowledgedSteps: string[];
   completedPaths: PathKey[];
 }
-
-const STORAGE_KEY = 'the-den-mobile-training-state';
 
 const PATHS: PathDefinition[] = [
   {
@@ -342,52 +339,14 @@ const PATHS: PathDefinition[] = [
 ];
 
 function getInitialState(): StoredState {
-  if (typeof window === 'undefined') {
-    return {
-      activePath: 'team',
-      currentStepByPath: { team: 0, manager: 0 },
-      scenarioAnswers: {},
-      checklistState: {},
-      acknowledgedSteps: [],
-      completedPaths: [],
-    };
-  }
-
-  const raw = window.localStorage.getItem(STORAGE_KEY);
-  if (!raw) {
-    return {
-      activePath: 'team',
-      currentStepByPath: { team: 0, manager: 0 },
-      scenarioAnswers: {},
-      checklistState: {},
-      acknowledgedSteps: [],
-      completedPaths: [],
-    };
-  }
-
-  try {
-    const parsed = JSON.parse(raw) as Partial<StoredState>;
-    return {
-      activePath: parsed.activePath ?? null,
-      currentStepByPath: {
-        team: parsed.currentStepByPath?.team ?? 0,
-        manager: parsed.currentStepByPath?.manager ?? 0,
-      },
-      scenarioAnswers: parsed.scenarioAnswers ?? {},
-      checklistState: parsed.checklistState ?? {},
-      acknowledgedSteps: parsed.acknowledgedSteps ?? [],
-      completedPaths: parsed.completedPaths ?? [],
-    };
-  } catch {
-    return {
-      activePath: 'team',
-      currentStepByPath: { team: 0, manager: 0 },
-      scenarioAnswers: {},
-      checklistState: {},
-      acknowledgedSteps: [],
-      completedPaths: [],
-    };
-  }
+  return {
+    activePath: 'team',
+    currentStepByPath: { team: 0, manager: 0 },
+    scenarioAnswers: {},
+    checklistState: {},
+    acknowledgedSteps: [],
+    completedPaths: [],
+  };
 }
 
 export default function App() {
@@ -413,31 +372,6 @@ export default function App() {
     setCompletedPaths(initial.completedPaths);
     setIsReady(true);
   }, []);
-
-  useEffect(() => {
-    if (!isReady || typeof window === 'undefined') {
-      return;
-    }
-
-    const state: StoredState = {
-      activePath,
-      currentStepByPath,
-      scenarioAnswers,
-      checklistState,
-      acknowledgedSteps,
-      completedPaths,
-    };
-
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }, [
-    acknowledgedSteps,
-    activePath,
-    checklistState,
-    completedPaths,
-    currentStepByPath,
-    isReady,
-    scenarioAnswers,
-  ]);
 
   const activeDefinition = useMemo(
     () => PATHS.find((path) => path.key === activePath) ?? null,
@@ -482,10 +416,6 @@ export default function App() {
               <p className="topbar-kicker">The Den Rewards</p>
             </button>
             <h1 className="topbar-title">Mobile Training Tool</h1>
-          </div>
-          <div className="status-pill">
-            <BadgeCheck size={16} />
-            <span>{completedPaths.length} paths complete</span>
           </div>
         </header>
 
@@ -582,25 +512,43 @@ function HomeScreen({
   return (
     <main className="screen-content screen-content-home">
       <section className="hero-card">
-        <p className="eyebrow">Train the trainer aligned</p>
-        <h2 className="hero-title">Floor-ready team training.</h2>
+        <div className="hero-brand-row">
+          <img
+            src="/logo.png"
+            alt="Cascadia Liquor"
+            className="hero-brand hero-brand-cascadia"
+          />
+          <img
+            src="/The-Den_logo-brown.png"
+            alt="The Den Rewards"
+            className="hero-brand hero-brand-den"
+          />
+        </div>
+        <p className="eyebrow">The Den Rewards</p>
+        <h2 className="hero-title">Team Training</h2>
         <p className="hero-copy">
-          Short mobile modules to help staff deliver the invitation confidently,
-          handle yes or no smoothly, and keep the till moving.
+          Quick practice for launch week.
         </p>
+        <div className="hero-art">
+          <img
+            src="/The-Den_Bears-All.png"
+            alt="The Den bear family"
+            className="hero-bears"
+          />
+          <img
+            src="/The-Den_Bears-Black-Bear.png"
+            alt=""
+            aria-hidden="true"
+            className="hero-bear-accent"
+          />
+        </div>
         <div className="hero-actions">
           <button type="button" className="hero-primary" onClick={onStartTraining}>
-            {teamComplete ? 'Resume Team Training' : 'Start Team Training'}
+            Team Training
             <ArrowRight size={18} />
           </button>
           <div className="hero-meta">
             <span>{teamPath.steps.length} modules</span>
-            {teamComplete && (
-              <span className="mini-badge">
-                <CheckCircle2 size={14} />
-                {teamPath.completionLabel}
-              </span>
-            )}
           </div>
         </div>
       </section>
