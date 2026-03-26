@@ -8,506 +8,113 @@ import {
   ChevronDown,
   Circle,
   ClipboardList,
-  Crown,
+  ImagePlus,
   MessageSquareQuote,
   ShieldCheck,
   Store,
-  Users,
+  UserRound,
   X,
 } from 'lucide-react';
+import {
+  FAQ_SECTIONS,
+  MODULE_CONFIG,
+  PATHS,
+  STORE_OPTIONS,
+  TEAM_STEPS,
+  type ModuleKey,
+  type PathDefinition,
+  type PathKey,
+  type ScenarioOption,
+  type Step,
+} from './trainingData';
 
-type PathKey = 'team' | 'manager';
-type StepKind = 'brief' | 'script' | 'scenario' | 'checklist' | 'signoff';
-
-interface ScenarioOption {
-  text: string;
-  correct: boolean;
-  feedback: string;
+interface TraineeInfo {
+  name: string;
+  store: string;
+  otherStore: string;
+  startedAt: string | null;
 }
 
-interface Step {
-  id: string;
-  kind: StepKind;
-  eyebrow: string;
-  title: string;
-  summary: string;
-  script?: string;
-  bullets?: string[];
-  highlights?: { label: string; value: string; note?: string }[];
-  checklist?: string[];
-  prompt?: string;
-  options?: ScenarioOption[];
-  coachNote?: string;
+interface CompletionPayload {
+  traineeName: string;
+  store: string;
+  startedAt: string;
+  completedAt: string;
+  completionScore: number;
+  moduleStatus: Record<ModuleKey, boolean>;
+  firstAttemptResults: Record<string, boolean>;
 }
 
-interface PathDefinition {
-  key: PathKey;
-  label: string;
-  kicker: string;
-  description: string;
-  icon: typeof Users;
-  completionLabel: string;
-  steps: Step[];
+const initialTrainee = (): TraineeInfo => ({
+  name: '',
+  store: '',
+  otherStore: '',
+  startedAt: null,
+});
+
+const initialInteractionState = () => ({
+  activePath: 'team' as PathKey,
+  currentStepByPath: { team: 0, manager: 0 },
+  scenarioAnswers: {} as Record<string, number>,
+  firstAttemptResults: {} as Record<string, boolean>,
+  checklistState: {} as Record<string, string[]>,
+  acknowledgedSteps: [] as string[],
+  completedPaths: [] as PathKey[],
+});
+
+const scenarioSteps = TEAM_STEPS.filter((step) => step.kind === 'scenario');
+
+function isStepComplete(
+  step: Step,
+  state: {
+    scenarioAnswers: Record<string, number>;
+    checklistState: Record<string, string[]>;
+    acknowledgedSteps: string[];
+  },
+) {
+  if (step.kind === 'scenario') {
+    const index = state.scenarioAnswers[step.id];
+    return index !== undefined && Boolean(step.options?.[index]?.correct);
+  }
+  if (step.kind === 'checklist' || step.kind === 'signoff') {
+    const checked = state.checklistState[step.id] ?? [];
+    return step.checklist ? step.checklist.every((item) => checked.includes(item)) : true;
+  }
+  return state.acknowledgedSteps.includes(step.id);
 }
 
-interface StoredState {
-  activePath: PathKey | null;
-  currentStepByPath: Record<PathKey, number>;
-  scenarioAnswers: Record<string, number>;
-  checklistState: Record<string, string[]>;
-  acknowledgedSteps: string[];
-  completedPaths: PathKey[];
-}
-
-interface FaqItem {
-  question: string;
-  guestAnswer: string;
-  teamNote?: string;
-}
-
-interface FaqSection {
-  title: string;
-  items: FaqItem[];
-}
-
-const FAQ_SECTIONS: FaqSection[] = [
-  {
-    title: 'Program Basics',
-    items: [
-      {
-        question: 'What is The Den Rewards program?',
-        guestAnswer:
-          'The program rewards guests every time they shop. They earn points on purchases and can use those points for money off future visits.',
-        teamNote:
-          'Keep it simple: earn points now, redeem later, and higher tiers increase value over time.',
-      },
-      {
-        question: 'How do guests earn points, and what are they worth?',
-        guestAnswer:
-          'Guests earn 10 points for every $1 spent. Every 1,000 points equals $1 in rewards.',
-        teamNote:
-          'A simple value shortcut is “about $1 back for every $100 spent.” Avoid detailed math unless the guest asks.',
-      },
-      {
-        question: 'How long does a tier last?',
-        guestAnswer:
-          'Once a guest reaches a tier, they keep that status for one full year.',
-      },
-      {
-        question: 'What happens if an account is inactive?',
-        guestAnswer:
-          'Points stay active as long as the account stays active. If there is no activity for two years, the account expires.',
-        teamNote:
-          'If asked, mention that reminder messages go out before points expire.',
-      },
-      {
-        question: 'Is there a signup bonus?',
-        guestAnswer:
-          'Yes. Guests who sign up early receive bonus points for joining.',
-        teamNote:
-          'Keep the wording aligned to launch materials and mention the bonus without over-explaining thresholds.',
-      },
-      {
-        question: 'How valuable is the program?',
-        guestAnswer:
-          'Most guests earn about $1 back for every $100 they spend, and they earn rewards faster as they move into higher tiers.',
-      },
-    ],
-  },
-  {
-    title: 'Guest Questions',
-    items: [
-      {
-        question: 'Can points be used on alcohol?',
-        guestAnswer:
-          'Yes. Points can be used like money toward most purchases in the store.',
-        teamNote: 'Tobacco, lottery, and bottle deposits are excluded.',
-      },
-      {
-        question: 'Do points expire?',
-        guestAnswer:
-          'Points stay active as long as the account is active. If there is no activity for two years, the account expires.',
-      },
-      {
-        question: 'Can a guest use points right away?',
-        guestAnswer:
-          'Points are ready to use on the next visit. They cannot be earned and redeemed on the same day.',
-        teamNote:
-          'Points become available about 24 hours after the purchase.',
-      },
-      {
-        question: 'Does a guest lose their tier if they stop shopping?',
-        guestAnswer:
-          'No. Once a guest reaches a tier, they keep it for a full year from the date they reached it.',
-      },
-      {
-        question: 'How can a guest check their points?',
-        guestAnswer:
-          'Their points balance appears on the receipt and can also be viewed through their loyalty account.',
-      },
-    ],
-  },
-  {
-    title: 'POS Troubleshooting',
-    items: [
-      {
-        question: 'What if points do not appear immediately?',
-        guestAnswer:
-          'Points appear after the transaction is completed and will be available for the next visit.',
-      },
-      {
-        question: 'What if the guest wants to redeem but does not have enough points?',
-        guestAnswer:
-          'Let them know they are close to their first reward and likely need only another visit or two.',
-      },
-      {
-        question: 'What if the guest forgot they were a member?',
-        guestAnswer:
-          'Look up the account using the guest’s phone number.',
-      },
-      {
-        question: 'What if the guest asks why they cannot redeem today?',
-        guestAnswer:
-          'Points activate for the next visit so everyone earns rewards the same way.',
-      },
-    ],
-  },
-  {
-    title: 'How To Talk About It',
-    items: [
-      {
-        question: 'What is the best checkout invitation?',
-        guestAnswer:
-          'A short, natural invitation works best: ask if they are part of the new loyalty program and mention that they earn points toward money off future purchases.',
-        teamNote:
-          'If the guest is interested, move into signup and mention the bonus points.',
-      },
-      {
-        question: 'What should I say when the store is busy?',
-        guestAnswer:
-          'Use the short version: “Want to earn points on today’s purchase?”',
-      },
-      {
-        question: 'What should I say to a regular guest?',
-        guestAnswer:
-          'Try: “You shop here often. Our new loyalty program lets you earn rewards every time you visit.”',
-      },
-    ],
-  },
-];
-
-const PATHS: PathDefinition[] = [
-  {
-    key: 'team',
-    label: 'Team Member',
-    kicker: 'Floor-ready training',
-    description:
-      'Learn the exact invitation, the fast response flow, and how to keep the till moving.',
-    icon: Users,
-    completionLabel: 'Floor Ready',
-    steps: [
-      {
-        id: 'team-why',
-        kind: 'brief',
-        eyebrow: 'Why This Matters',
-        title: 'Build the automatic choice.',
-        summary:
-          'The Den is not just a points program. It gives guests a reason to choose Cascadia again and again.',
-        bullets: [
-          'Invite every guest',
-          'Keep the ask calm and clear',
-          'Focus on consistency, not conversion',
-        ],
-        highlights: [
-          {
-            label: 'Launch incentive',
-            value: '5,000 bonus points',
-            note: 'Available until April 17',
-          },
-          {
-            label: 'Base earn',
-            value: '10 pts / $1',
-            note: 'Higher tiers increase earn rate',
-          },
-          {
-            label: 'Reward value',
-            value: '1,000 pts = $1',
-            note: 'Redeem at checkout',
-          },
-        ],
-      },
-      {
-        id: 'team-script',
-        kind: 'script',
-        eyebrow: 'What To Say',
-        title: 'Use the launch script exactly like this.',
-        summary:
-          'This is the behavior to repeat. Short. Natural. Confident.',
-        script:
-          'Are you a member of our new loyalty program? Until April 17, new members get 5,000 bonus points. Can I set that up for you?',
-        bullets: [
-          'Do not over-explain',
-          'Do not apologize for asking',
-          'Pause and let the guest answer',
-        ],
-        checklist: [
-          'I read the script out loud once',
-          'I can deliver it without adding extra detail',
-        ],
-        coachNote:
-          'A good script delivery sounds calm, not salesy. Let the guest decide.',
-      },
-      {
-        id: 'team-no',
-        kind: 'scenario',
-        eyebrow: 'If They Say No',
-        title: 'A clean exit is part of success.',
-        summary:
-          'A no does not mean failure. The standard is a respectful exit with no pressure.',
-        prompt: 'The guest says, “No thanks.” What should you say next?',
-        options: [
-          {
-            text: 'Explain the tiers and bonus points in more detail',
-            correct: false,
-            feedback:
-              'Not correct. The training standard is no pressure and no second attempt.',
-          },
-          {
-            text: "That's okay. If you decide to later, there's a QR code you can use.",
-            correct: true,
-            feedback:
-              'Correct. That keeps the interaction smooth and protects the guest experience.',
-          },
-          {
-            text: 'Ask again after payment to make sure they understood',
-            correct: false,
-            feedback:
-              'Not correct. A second attempt creates pressure and slows the transaction.',
-          },
-        ],
-        coachNote: 'No pressure. No awkward pause. Move on cleanly.',
-      },
-      {
-        id: 'team-busy',
-        kind: 'scenario',
-        eyebrow: 'Busy Line Protocol',
-        title: 'Protect speed when the line builds.',
-        summary:
-          'You still invite the guest, but you use the short version when the line is growing.',
-        script:
-          'For the first two weeks only, new members get 5,000 bonus points. You can scan this QR code to join now, or next time you are in the store.',
-        prompt:
-          'There are four people in line and no backup. What is the right move?',
-        options: [
-          {
-            text: 'Stop mentioning loyalty until the rush is over',
-            correct: false,
-            feedback:
-              'Not correct. The behavior is still to invite, just with a shorter version.',
-          },
-          {
-            text: 'Use the busy line script and keep the transaction moving',
-            correct: true,
-            feedback:
-              'Correct. Service speed and a short invitation can coexist.',
-          },
-          {
-            text: 'Give the full script and full explanation to every guest',
-            correct: false,
-            feedback:
-              'Not correct. The line-speed constraint changes how much you say.',
-          },
-        ],
-        coachNote:
-          'The goal is not perfect explanation. The goal is a fast, clear invitation.',
-      },
-      {
-        id: 'team-yes',
-        kind: 'checklist',
-        eyebrow: 'If They Say Yes',
-        title: 'Move directly into enrollment.',
-        summary:
-          'Yes should feel smooth. Keep the flow tight and accurate.',
-        checklist: [
-          'Open the customer menu',
-          'Select add customer',
-          'Enter the guest details carefully',
-          'Confirm marketing consent',
-          'Save the profile and continue the sale',
-        ],
-        bullets: [
-          'Phone number is the best primary identifier',
-          'Keep the guest informed without adding friction',
-          'Do not let enrollment stall the line',
-        ],
-        coachNote:
-          'Confidence builds trust. Hesitation makes the guest question the process.',
-      },
-      {
-        id: 'team-signoff',
-        kind: 'signoff',
-        eyebrow: 'Manager Check',
-        title: 'Pass the floor-ready standard.',
-        summary:
-          'You are ready when you can deliver the script, handle yes/no cleanly, and keep the transaction moving.',
-        checklist: [
-          'I can deliver the invitation without reading',
-          'I know the clean no-response',
-          'I know when to use busy line protocol',
-          'I can move into enrollment smoothly',
-        ],
-      },
-    ],
-  },
-  {
-    key: 'manager',
-    label: 'Manager',
-    kicker: 'Coaching tool',
-    description:
-      'Run a fast huddle, observe the right behaviors, and reinforce the launch standard daily.',
-    icon: Crown,
-    completionLabel: 'Coach Ready',
-    steps: [
-      {
-        id: 'manager-standard',
-        kind: 'brief',
-        eyebrow: 'Manager Standard',
-        title: 'Coach the behavior, not the theory.',
-        summary:
-          'Managers do not need staff to memorize everything. They need staff to ask every guest and handle the response cleanly.',
-        bullets: [
-          'Watch whether they ask',
-          'Watch how they ask',
-          'Correct over-explaining immediately',
-        ],
-        highlights: [
-          {
-            label: 'Roadshow',
-            value: 'March 16 to April 1',
-          },
-          {
-            label: 'Launch week',
-            value: 'April 3 to April 10',
-          },
-          {
-            label: 'Bonus window',
-            value: 'Until April 17',
-          },
-        ],
-      },
-      {
-        id: 'manager-huddle',
-        kind: 'checklist',
-        eyebrow: '3-Minute Huddle',
-        title: 'Run this before the shift.',
-        summary:
-          'Use a repeatable huddle so every team member hears the same message.',
-        checklist: [
-          'Reinforce the exact invitation script',
-          'Role-play one yes response',
-          'Role-play one no response',
-          'Review busy line protocol',
-          'Set the expectation: invite every guest',
-        ],
-        coachNote:
-          'Keep the huddle practical. This is not a presentation. It is a behavior reset.',
-      },
-      {
-        id: 'manager-observe',
-        kind: 'scenario',
-        eyebrow: 'Live Observation',
-        title: 'Know what to correct on the floor.',
-        summary:
-          'Pick the issue you should coach first when you hear weak loyalty delivery.',
-        prompt:
-          'A team member asks the script but then keeps talking for 20 seconds about points and tiers. What is the first coaching correction?',
-        options: [
-          {
-            text: 'Tell them to stop asking guests who look rushed',
-            correct: false,
-            feedback:
-              'Not correct. The ask should still happen consistently.',
-          },
-          {
-            text: 'Coach them to shorten the script and let the guest answer',
-            correct: true,
-            feedback:
-              'Correct. Over-explaining is one of the biggest execution risks.',
-          },
-          {
-            text: 'Tell them to only mention loyalty to regular guests',
-            correct: false,
-            feedback:
-              'Not correct. The expectation is to invite every guest.',
-          },
-        ],
-        coachNote:
-          'Common issues: skipping the ask, over-explaining, apologetic tone, and weak exits.',
-      },
-      {
-        id: 'manager-checklist',
-        kind: 'checklist',
-        eyebrow: 'Observation Checklist',
-        title: 'Use these checks during launch week.',
-        summary:
-          'These are the behaviors worth inspecting in live transactions.',
-        checklist: [
-          'The team member asked every guest',
-          'The invitation was short and confident',
-          'They paused and allowed the guest to answer',
-          'They handled no with no pressure',
-          'They moved yes into enrollment smoothly',
-          'They protected line speed',
-        ],
-      },
-      {
-        id: 'manager-signoff',
-        kind: 'signoff',
-        eyebrow: 'Coach Ready',
-        title: 'Set the tone for adoption.',
-        summary:
-          'Managers make the rollout real by reinforcing the standard every day, not just on launch day.',
-        checklist: [
-          'I can run the 3-minute huddle',
-          'I know the behaviors to correct first',
-          'I will observe live transactions during launch',
-          'I will reinforce the standard daily',
-        ],
-      },
-    ],
-  },
-];
-
-function getInitialState(): StoredState {
-  return {
-    activePath: 'team',
-    currentStepByPath: { team: 0, manager: 0 },
-    scenarioAnswers: {},
-    checklistState: {},
-    acknowledgedSteps: [],
-    completedPaths: [],
-  };
+function moduleSteps(module: ModuleKey) {
+  return TEAM_STEPS.filter((step) => step.module === module);
 }
 
 export default function App() {
   const [isReady, setIsReady] = useState(false);
-  const [activePath, setActivePath] = useState<PathKey | null>(null);
+  const [trainee, setTrainee] = useState<TraineeInfo>(initialTrainee());
+  const [activePath, setActivePath] = useState<PathKey | null>('team');
   const [currentStepByPath, setCurrentStepByPath] = useState<Record<PathKey, number>>({
     team: 0,
     manager: 0,
   });
   const [scenarioAnswers, setScenarioAnswers] = useState<Record<string, number>>({});
+  const [firstAttemptResults, setFirstAttemptResults] = useState<Record<string, boolean>>(
+    {},
+  );
   const [checklistState, setChecklistState] = useState<Record<string, string[]>>({});
   const [acknowledgedSteps, setAcknowledgedSteps] = useState<string[]>([]);
   const [completedPaths, setCompletedPaths] = useState<PathKey[]>([]);
   const [managerTapCount, setManagerTapCount] = useState(0);
   const [isKnowledgeBaseOpen, setIsKnowledgeBaseOpen] = useState(false);
+  const [submissionState, setSubmissionState] = useState<
+    'idle' | 'submitting' | 'success' | 'error'
+  >('idle');
+  const [submissionMessage, setSubmissionMessage] = useState('');
 
   useEffect(() => {
-    const initial = getInitialState();
+    const initial = initialInteractionState();
     setActivePath(initial.activePath);
     setCurrentStepByPath(initial.currentStepByPath);
     setScenarioAnswers(initial.scenarioAnswers);
+    setFirstAttemptResults(initial.firstAttemptResults);
     setChecklistState(initial.checklistState);
     setAcknowledgedSteps(initial.acknowledgedSteps);
     setCompletedPaths(initial.completedPaths);
@@ -518,12 +125,30 @@ export default function App() {
     () => PATHS.find((path) => path.key === activePath) ?? null,
     [activePath],
   );
-
-  const currentStepIndex = activeDefinition
-    ? currentStepByPath[activeDefinition.key]
-    : 0;
-
+  const currentStepIndex = activeDefinition ? currentStepByPath[activeDefinition.key] : 0;
   const currentStep = activeDefinition?.steps[currentStepIndex] ?? null;
+
+  const normalizedStore =
+    trainee.store === 'Other store' ? trainee.otherStore.trim() : trainee.store;
+  const canStartTraining = trainee.name.trim().length > 1 && normalizedStore.length > 0;
+  const firstTryCorrectCount = scenarioSteps.filter(
+    (step) => firstAttemptResults[step.id],
+  ).length;
+  const completionScore = scenarioSteps.length
+    ? Math.round((firstTryCorrectCount / scenarioSteps.length) * 100)
+    : 100;
+
+  const moduleStatus: Record<ModuleKey, boolean> = {
+    basics: moduleSteps('basics').every((step) =>
+      isStepComplete(step, { scenarioAnswers, checklistState, acknowledgedSteps }),
+    ),
+    pos: moduleSteps('pos').every((step) =>
+      isStepComplete(step, { scenarioAnswers, checklistState, acknowledgedSteps }),
+    ),
+    account: moduleSteps('account').every((step) =>
+      isStepComplete(step, { scenarioAnswers, checklistState, acknowledgedSteps }),
+    ),
+  };
 
   if (!isReady) {
     return (
@@ -536,6 +161,62 @@ export default function App() {
     );
   }
 
+  const resetTraining = () => {
+    const initial = initialInteractionState();
+    setCurrentStepByPath(initial.currentStepByPath);
+    setScenarioAnswers(initial.scenarioAnswers);
+    setFirstAttemptResults(initial.firstAttemptResults);
+    setChecklistState(initial.checklistState);
+    setAcknowledgedSteps(initial.acknowledgedSteps);
+    setCompletedPaths(initial.completedPaths);
+    setSubmissionState('idle');
+    setSubmissionMessage('');
+    setTrainee((current) => ({ ...current, startedAt: null }));
+    setActivePath('team');
+  };
+
+  const submitCompletion = async (): Promise<boolean> => {
+    if (!canStartTraining || !trainee.startedAt) {
+      setSubmissionState('error');
+      setSubmissionMessage('Enter your name and store before submitting completion.');
+      return false;
+    }
+
+    setSubmissionState('submitting');
+    setSubmissionMessage('');
+
+    const payload: CompletionPayload = {
+      traineeName: trainee.name.trim(),
+      store: normalizedStore,
+      startedAt: trainee.startedAt,
+      completedAt: new Date().toISOString(),
+      completionScore,
+      moduleStatus,
+      firstAttemptResults,
+    };
+
+    try {
+      const response = await fetch('/api/training-completion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = (await response.json().catch(() => null)) as { message?: string } | null;
+      if (!response.ok) {
+        throw new Error(data?.message ?? 'Unable to submit training completion.');
+      }
+      setSubmissionState('success');
+      setSubmissionMessage('Completion submitted successfully.');
+      return true;
+    } catch (error) {
+      setSubmissionState('error');
+      setSubmissionMessage(
+        error instanceof Error ? error.message : 'Unable to submit training completion.',
+      );
+      return false;
+    }
+  };
+
   return (
     <div className="app-shell">
       <div className="mobile-frame">
@@ -545,13 +226,13 @@ export default function App() {
               type="button"
               className="secret-trigger"
               onClick={() => {
-                const nextCount = managerTapCount + 1;
-                if (nextCount >= 5) {
+                const next = managerTapCount + 1;
+                if (next >= 5) {
                   setActivePath('manager');
                   setManagerTapCount(0);
                   return;
                 }
-                setManagerTapCount(nextCount);
+                setManagerTapCount(next);
               }}
             >
               <p className="topbar-kicker">The Den Rewards</p>
@@ -562,36 +243,51 @@ export default function App() {
 
         {!activeDefinition || !currentStep ? (
           <HomeScreen
-            completedPaths={completedPaths}
-            onStartTraining={() => setActivePath('team')}
-            onOpenManager={() => setActivePath('manager')}
+            trainee={trainee}
+            canStartTraining={canStartTraining}
+            completionScore={completionScore}
+            moduleStatus={moduleStatus}
+            onTraineeChange={setTrainee}
+            onStartTraining={() => {
+              setSubmissionState('idle');
+              setSubmissionMessage('');
+              setTrainee((current) => ({
+                ...current,
+                startedAt: current.startedAt ?? new Date().toISOString(),
+              }));
+              setActivePath('team');
+            }}
             onOpenKnowledgeBase={() => setIsKnowledgeBaseOpen(true)}
+            onOpenManager={() => setActivePath('manager')}
           />
         ) : (
           <PathExperience
+            trainee={trainee}
             path={activeDefinition}
             stepIndex={currentStepIndex}
             currentStep={currentStep}
             scenarioAnswers={scenarioAnswers}
             checklistState={checklistState}
             acknowledgedSteps={acknowledgedSteps}
+            completionScore={completionScore}
+            moduleStatus={moduleStatus}
+            submissionState={submissionState}
+            submissionMessage={submissionMessage}
             onBackToHome={() => setActivePath(null)}
-            onScenarioAnswer={(stepId, answerIndex) => {
-              setScenarioAnswers((current) => ({
-                ...current,
-                [stepId]: answerIndex,
-              }));
+            onScenarioAnswer={(stepId, answerIndex, isCorrect) => {
+              setScenarioAnswers((current) => ({ ...current, [stepId]: answerIndex }));
+              setFirstAttemptResults((current) =>
+                stepId in current ? current : { ...current, [stepId]: isCorrect },
+              );
             }}
             onToggleChecklist={(stepId, item) => {
               setChecklistState((current) => {
                 const existing = current[stepId] ?? [];
-                const nextItems = existing.includes(item)
-                  ? existing.filter((entry) => entry !== item)
-                  : [...existing, item];
-
                 return {
                   ...current,
-                  [stepId]: nextItems,
+                  [stepId]: existing.includes(item)
+                    ? existing.filter((entry) => entry !== item)
+                    : [...existing, item],
                 };
               });
             }}
@@ -607,9 +303,12 @@ export default function App() {
                 [activeDefinition.key]: Math.max(current[activeDefinition.key] - 1, 0),
               }));
             }}
-            onNext={() => {
+            onNext={async () => {
               const isLast = currentStepIndex === activeDefinition.steps.length - 1;
-
+              if (activeDefinition.key === 'team' && isLast) {
+                const submitted = await submitCompletion();
+                if (!submitted) return;
+              }
               if (isLast) {
                 setCompletedPaths((current) =>
                   current.includes(activeDefinition.key)
@@ -619,7 +318,6 @@ export default function App() {
                 setActivePath(null);
                 return;
               }
-
               setCurrentStepByPath((current) => ({
                 ...current,
                 [activeDefinition.key]: Math.min(
@@ -628,8 +326,10 @@ export default function App() {
                 ),
               }));
             }}
+            onResetTraining={resetTraining}
           />
         )}
+
         <KnowledgeBaseSheet
           isOpen={isKnowledgeBaseOpen}
           onClose={() => setIsKnowledgeBaseOpen(false)}
@@ -640,92 +340,120 @@ export default function App() {
 }
 
 function HomeScreen({
-  completedPaths,
+  trainee,
+  canStartTraining,
+  completionScore,
+  moduleStatus,
+  onTraineeChange,
   onStartTraining,
-  onOpenManager,
   onOpenKnowledgeBase,
+  onOpenManager,
 }: {
-  completedPaths: PathKey[];
+  trainee: TraineeInfo;
+  canStartTraining: boolean;
+  completionScore: number;
+  moduleStatus: Record<ModuleKey, boolean>;
+  onTraineeChange: (trainee: TraineeInfo) => void;
   onStartTraining: () => void;
-  onOpenManager: () => void;
   onOpenKnowledgeBase: () => void;
+  onOpenManager: () => void;
 }) {
-  const teamPath = PATHS.find((path) => path.key === 'team');
-  const teamComplete = completedPaths.includes('team');
-  const managerComplete = completedPaths.includes('manager');
-
-  if (!teamPath) {
-    return null;
-  }
-
   return (
     <main className="screen-content screen-content-home">
       <section className="hero-card">
         <div className="hero-brand-row">
-          <img
-            src="/logo.png"
-            alt="Cascadia Liquor"
-            className="hero-brand hero-brand-cascadia"
-          />
-          <img
-            src="/The-Den_logo-brown.png"
-            alt="The Den Rewards"
-            className="hero-brand hero-brand-den"
-          />
+          <img src="/logo.png" alt="Cascadia Liquor" className="hero-brand hero-brand-cascadia" />
+          <img src="/The-Den_logo-brown.png" alt="The Den Rewards" className="hero-brand hero-brand-den" />
         </div>
         <p className="eyebrow">The Den Rewards</p>
         <h2 className="hero-title">Team Training</h2>
         <p className="hero-copy">
-          Quick practice for launch week.
+          Three modules covering loyalty basics, POS execution, and account management.
         </p>
         <div className="hero-art">
-          <img
-            src="/The-Den_Bears-All.png"
-            alt="The Den bear family"
-            className="hero-bears"
-          />
-          <img
-            src="/The-Den_Bears-Black-Bear.png"
-            alt=""
-            aria-hidden="true"
-            className="hero-bear-accent"
-          />
+          <img src="/The-Den_Bears-All.png" alt="The Den bear family" className="hero-bears" />
+          <img src="/The-Den_Bears-Black-Bear.png" alt="" aria-hidden="true" className="hero-bear-accent" />
         </div>
         <div className="hero-actions">
-          <button type="button" className="hero-primary" onClick={onStartTraining}>
+          <div className="onboarding-card">
+            <p className="prompt-label">Before training starts</p>
+            <div className="form-stack">
+              <label className="field-label">
+                <span>Name</span>
+                <div className="field-input-wrap">
+                  <UserRound size={16} />
+                  <input className="field-input" value={trainee.name} onChange={(e) => onTraineeChange({ ...trainee, name: e.target.value })} placeholder="Enter your name" />
+                </div>
+              </label>
+              <label className="field-label">
+                <span>Store</span>
+                <div className="field-input-wrap field-select-wrap">
+                  <Store size={16} />
+                  <select className="field-input field-select" value={trainee.store} onChange={(e) => onTraineeChange({ ...trainee, store: e.target.value })}>
+                    <option value="">Select your store</option>
+                    {STORE_OPTIONS.map((store) => (
+                      <option key={store} value={store}>{store}</option>
+                    ))}
+                  </select>
+                </div>
+              </label>
+              {trainee.store === 'Other store' && (
+                <label className="field-label">
+                  <span>Other store name</span>
+                  <div className="field-input-wrap">
+                    <Store size={16} />
+                    <input className="field-input" value={trainee.otherStore} onChange={(e) => onTraineeChange({ ...trainee, otherStore: e.target.value })} placeholder="Enter your store" />
+                  </div>
+                </label>
+              )}
+            </div>
+          </div>
+
+          <div className="module-preview-grid">
+            {(Object.keys(MODULE_CONFIG) as ModuleKey[]).map((key) => {
+              const module = MODULE_CONFIG[key];
+              const Icon = module.icon;
+              return (
+                <div key={key} className="module-preview-card">
+                  <div className="module-preview-top">
+                    <div className="module-preview-icon"><Icon size={18} /></div>
+                    {moduleStatus[key] && <span className="mini-badge"><CheckCircle2 size={14} />Complete</span>}
+                  </div>
+                  <p className="module-preview-title">{module.label}</p>
+                  <p className="module-preview-copy">{module.description}</p>
+                </div>
+              );
+            })}
+          </div>
+
+          <button type="button" className="hero-primary" onClick={onStartTraining} disabled={!canStartTraining}>
             Team Training
             <ArrowRight size={18} />
           </button>
-          <div className="hero-meta">
-            <span>{teamPath.steps.length} modules</span>
-          </div>
-          <button
-            type="button"
-            className="hero-secondary-link"
-            onClick={onOpenKnowledgeBase}
-          >
+          <div className="hero-meta"><span>Completion score: {completionScore}%</span></div>
+          <button type="button" className="hero-secondary-link" onClick={onOpenKnowledgeBase}>
             <BookOpen size={16} />
             Knowledge Base
           </button>
         </div>
       </section>
-
-      {managerComplete && (
-        <button type="button" className="manager-return" onClick={onOpenManager}>
-          Reopen manager tools
-        </button>
-      )}
+      <button type="button" className="manager-return" onClick={onOpenManager}>Manager tools</button>
     </main>
   );
 }
 
 function PathExperience({
+  trainee,
   path,
   stepIndex,
   currentStep,
   scenarioAnswers,
   checklistState,
   acknowledgedSteps,
+  completionScore,
+  moduleStatus,
+  submissionState,
+  submissionMessage,
   onBackToHome,
   onScenarioAnswer,
   onToggleChecklist,
@@ -733,199 +461,118 @@ function PathExperience({
   onOpenKnowledgeBase,
   onPrev,
   onNext,
+  onResetTraining,
 }: {
+  trainee: TraineeInfo;
   path: PathDefinition;
   stepIndex: number;
   currentStep: Step;
   scenarioAnswers: Record<string, number>;
   checklistState: Record<string, string[]>;
   acknowledgedSteps: string[];
+  completionScore: number;
+  moduleStatus: Record<ModuleKey, boolean>;
+  submissionState: 'idle' | 'submitting' | 'success' | 'error';
+  submissionMessage: string;
   onBackToHome: () => void;
-  onScenarioAnswer: (stepId: string, answerIndex: number) => void;
+  onScenarioAnswer: (stepId: string, answerIndex: number, isCorrect: boolean) => void;
   onToggleChecklist: (stepId: string, item: string) => void;
   onAcknowledge: (stepId: string) => void;
   onOpenKnowledgeBase: () => void;
   onPrev: () => void;
-  onNext: () => void;
+  onNext: () => void | Promise<void>;
+  onResetTraining: () => void;
 }) {
-  const selectedAnswer =
-    currentStep.kind === 'scenario'
-      ? scenarioAnswers[currentStep.id]
-      : undefined;
-
-  const selectedOption =
-    selectedAnswer !== undefined && currentStep.options
-      ? currentStep.options[selectedAnswer]
-      : undefined;
-
+  const selectedAnswer = currentStep.kind === 'scenario' ? scenarioAnswers[currentStep.id] : undefined;
+  const selectedOption = selectedAnswer !== undefined && currentStep.options ? currentStep.options[selectedAnswer] : undefined;
   const checkedItems = checklistState[currentStep.id] ?? [];
-  const allChecklistItemsChecked =
-    currentStep.checklist?.length
-      ? currentStep.checklist.every((item) => checkedItems.includes(item))
-      : false;
-
+  const allChecklistItemsChecked = currentStep.checklist ? currentStep.checklist.every((item) => checkedItems.includes(item)) : false;
   const isAcknowledged = acknowledgedSteps.includes(currentStep.id);
-
-  let canAdvance = true;
-  if (currentStep.kind === 'scenario') {
-    canAdvance = selectedOption?.correct ?? false;
-  } else if (currentStep.kind === 'script') {
-    canAdvance = allChecklistItemsChecked;
-  } else if (currentStep.kind === 'checklist' || currentStep.kind === 'signoff') {
-    canAdvance = allChecklistItemsChecked;
-  } else if (currentStep.kind === 'brief') {
-    canAdvance = isAcknowledged;
-  }
-
+  const canAdvance = currentStep.kind === 'scenario'
+    ? Boolean(selectedOption?.correct)
+    : currentStep.kind === 'checklist' || currentStep.kind === 'signoff'
+      ? allChecklistItemsChecked
+      : isAcknowledged;
   const progress = ((stepIndex + 1) / path.steps.length) * 100;
   const isLastStep = stepIndex === path.steps.length - 1;
-  const stepIcon =
-    path.key === 'team' ? <Store size={18} /> : <ClipboardList size={18} />;
+  const moduleKey = currentStep.module;
+  const currentModule = moduleKey ? MODULE_CONFIG[moduleKey] : null;
+  const currentModuleSteps = moduleKey ? moduleSteps(moduleKey) : [];
+  const currentModuleIndex = moduleKey ? currentModuleSteps.findIndex((step) => step.id === currentStep.id) : -1;
 
   return (
     <>
       <div className="path-header">
-        <button type="button" className="ghost-button" onClick={onBackToHome}>
-          <ArrowLeft size={16} />
-          All Paths
-        </button>
+        <button type="button" className="ghost-button" onClick={onBackToHome}><ArrowLeft size={16} />Home</button>
         <div className="path-header-meta">
-          <span className="mode-pill">
-            {stepIcon}
-            {path.label}
-          </span>
-          <span className="count-pill">
-            {stepIndex + 1} / {path.steps.length}
-          </span>
+          <span className="mode-pill">{path.label}</span>
+          <span className="count-pill">{stepIndex + 1} / {path.steps.length}</span>
         </div>
       </div>
-
-      <div className="progress-track">
-        <motion.div
-          className="progress-fill"
-          initial={false}
-          animate={{ width: `${progress}%` }}
-        />
-      </div>
-
+      <div className="progress-track"><motion.div className="progress-fill" initial={false} animate={{ width: `${progress}%` }} /></div>
       <main className="screen-content">
+        {path.key === 'team' && (
+          <>
+            <section className="training-summary-card">
+              <div>
+                <p className="prompt-label">Training session</p>
+                <p className="training-summary-name">{trainee.name || 'Unnamed trainee'}</p>
+                <p className="training-summary-copy">{trainee.store === 'Other store' ? trainee.otherStore : trainee.store}</p>
+              </div>
+              <div className="training-summary-score">Score {completionScore}%</div>
+            </section>
+            <section className="module-strip">
+              {(Object.keys(MODULE_CONFIG) as ModuleKey[]).map((key) => {
+                const module = MODULE_CONFIG[key];
+                const Icon = module.icon;
+                const isCurrent = key === moduleKey;
+                return (
+                  <div key={key} className={`module-pill ${isCurrent ? 'module-pill-current' : ''}`}>
+                    <Icon size={16} />
+                    <span>{module.shortLabel}</span>
+                    {moduleStatus[key] && <CheckCircle2 size={14} />}
+                  </div>
+                );
+              })}
+            </section>
+          </>
+        )}
         <AnimatePresence mode="wait">
-          <motion.section
-            key={currentStep.id}
-            className="module-card"
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -18 }}
-            transition={{ duration: 0.22, ease: 'easeOut' }}
-          >
+          <motion.section key={currentStep.id} className="module-card" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -18 }} transition={{ duration: 0.22, ease: 'easeOut' }}>
+            {currentModule && (
+              <div className="module-heading-top">
+                <p className="eyebrow">{currentModule.label}</p>
+                <span className="mini-badge">{currentModuleIndex + 1} / {currentModuleSteps.length} in module</span>
+              </div>
+            )}
             <div className="module-heading">
               <p className="eyebrow">{currentStep.eyebrow}</p>
               <h2 className="module-title">{currentStep.title}</h2>
               <p className="module-summary">{currentStep.summary}</p>
             </div>
-
-            {currentStep.highlights && (
-              <div className="highlight-grid">
-                {currentStep.highlights.map((item) => (
-                  <div key={item.label} className="highlight-card">
-                    <p className="highlight-label">{item.label}</p>
-                    <p className="highlight-value">{item.value}</p>
-                    {item.note && <p className="highlight-note">{item.note}</p>}
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {currentStep.script && (
-              <div className="script-card">
-                <MessageSquareQuote size={18} className="script-icon" />
-                <p>{currentStep.script}</p>
-              </div>
-            )}
-
-            {currentStep.bullets && (
-              <ul className="bullet-list bullet-list-card">
-                {currentStep.bullets.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            )}
-
-            {currentStep.kind === 'brief' && (
-              <button
-                type="button"
-                className={`action-tile ${isAcknowledged ? 'action-tile-complete' : ''}`}
-                onClick={() => onAcknowledge(currentStep.id)}
-              >
-                <CheckCircle2 size={18} />
-                <span>{isAcknowledged ? 'Module reviewed' : 'Mark as understood'}</span>
-              </button>
-            )}
-
-            {currentStep.kind === 'scenario' && currentStep.prompt && currentStep.options && (
-              <ScenarioCard
-                step={currentStep}
-                selectedAnswer={selectedAnswer}
-                selectedOption={selectedOption}
-                onScenarioAnswer={onScenarioAnswer}
-              />
-            )}
-
-            {currentStep.checklist && (
-              <ChecklistCard
-                stepId={currentStep.id}
-                items={currentStep.checklist}
-                checkedItems={checkedItems}
-                onToggleChecklist={onToggleChecklist}
-              />
-            )}
-
-            {currentStep.coachNote && (
-              <div className="coach-note">
-                <ShieldCheck size={18} />
-                <div>
-                  <p className="coach-note-title">Coaching note</p>
-                  <p>{currentStep.coachNote}</p>
-                </div>
-              </div>
-            )}
-
+            {currentStep.highlights && <div className="highlight-grid">{currentStep.highlights.map((item) => <div key={item.label} className="highlight-card"><p className="highlight-label">{item.label}</p><p className="highlight-value">{item.value}</p>{item.note && <p className="highlight-note">{item.note}</p>}</div>)}</div>}
+            {currentStep.script && <div className="script-card"><MessageSquareQuote size={18} className="script-icon" /><p>{currentStep.script}</p></div>}
+            {currentStep.bullets && <ul className="bullet-list bullet-list-card">{currentStep.bullets.map((item) => <li key={item}>{item}</li>)}</ul>}
+            {currentStep.mediaPlaceholders && <div className="media-placeholder-grid">{currentStep.mediaPlaceholders.map((item) => <div key={item.title} className="media-placeholder-card"><div className="media-placeholder-icon"><ImagePlus size={18} /></div><p className="media-placeholder-title">{item.title}</p><p className="media-placeholder-copy">{item.body}</p></div>)}</div>}
+            {currentStep.kind === 'brief' && <button type="button" className={`action-tile ${isAcknowledged ? 'action-tile-complete' : ''}`} onClick={() => onAcknowledge(currentStep.id)}><CheckCircle2 size={18} /><span>{isAcknowledged ? 'Module reviewed' : 'Mark as understood'}</span></button>}
+            {currentStep.kind === 'scenario' && currentStep.prompt && currentStep.options && <ScenarioCard step={currentStep} selectedAnswer={selectedAnswer} selectedOption={selectedOption} onScenarioAnswer={onScenarioAnswer} />}
+            {currentStep.checklist && <ChecklistCard stepId={currentStep.id} items={currentStep.checklist} checkedItems={checkedItems} onToggleChecklist={onToggleChecklist} />}
+            {currentStep.coachNote && <div className="coach-note"><ShieldCheck size={18} /><div><p className="coach-note-title">Coaching note</p><p>{currentStep.coachNote}</p></div></div>}
             {path.key === 'team' && currentStep.kind === 'signoff' && (
               <div className="support-card">
-                <p className="coach-note-title">Need a refresher?</p>
-                <p>Open the knowledge base or ask your store manager if you are unsure.</p>
-                <button
-                  type="button"
-                  className="knowledge-link-inline"
-                  onClick={onOpenKnowledgeBase}
-                >
-                  <BookOpen size={16} />
-                  Open Knowledge Base
-                </button>
+                <p className="coach-note-title">Tracking and support</p>
+                <p>Completion will be submitted with your name, store, and score. Use the knowledge base or ask your store manager if you are unsure.</p>
+                <button type="button" className="knowledge-link-inline" onClick={onOpenKnowledgeBase}><BookOpen size={16} />Open Knowledge Base</button>
+                <button type="button" className="knowledge-link-inline" onClick={onResetTraining}>Reset Training</button>
+                {submissionState !== 'idle' && <div className={`submission-state ${submissionState === 'success' ? 'submission-state-success' : submissionState === 'error' ? 'submission-state-error' : 'submission-state-pending'}`}>{submissionState === 'submitting' ? 'Submitting completion...' : submissionMessage}</div>}
               </div>
             )}
           </motion.section>
         </AnimatePresence>
       </main>
-
       <footer className="sticky-footer">
-        <button
-          type="button"
-          className="footer-secondary"
-          onClick={onPrev}
-          disabled={stepIndex === 0}
-        >
-          Back
-        </button>
-        <button
-          type="button"
-          className="footer-primary"
-          onClick={onNext}
-          disabled={!canAdvance}
-        >
-          {isLastStep ? 'Finish Path' : 'Next Module'}
-          <ArrowRight size={18} />
-        </button>
+        <button type="button" className="footer-secondary" onClick={onPrev} disabled={stepIndex === 0 || submissionState === 'submitting'}>Back</button>
+        <button type="button" className="footer-primary" onClick={() => void onNext()} disabled={!canAdvance || submissionState === 'submitting'}>{isLastStep ? 'Submit Completion' : 'Next Module'}<ArrowRight size={18} /></button>
       </footer>
     </>
   );
@@ -940,54 +587,24 @@ function ScenarioCard({
   step: Step;
   selectedAnswer: number | undefined;
   selectedOption: ScenarioOption | undefined;
-  onScenarioAnswer: (stepId: string, answerIndex: number) => void;
+  onScenarioAnswer: (stepId: string, answerIndex: number, isCorrect: boolean) => void;
 }) {
   return (
     <div className="scenario-block">
-      <div className="prompt-card">
-        <p className="prompt-label">Scenario</p>
-        <p className="prompt-text">{step.prompt}</p>
-      </div>
-
+      <div className="prompt-card"><p className="prompt-label">Scenario</p><p className="prompt-text">{step.prompt}</p></div>
       <div className="option-stack">
         {step.options?.map((option, index) => {
           const isSelected = selectedAnswer === index;
           const hasAnswered = selectedAnswer !== undefined;
-
           let className = 'option-card';
-          if (!hasAnswered) {
-            className += ' option-card-idle';
-          } else if (option.correct) {
-            className += ' option-card-correct';
-          } else if (isSelected) {
-            className += ' option-card-incorrect';
-          } else {
-            className += ' option-card-muted';
-          }
-
-          return (
-            <button
-              key={option.text}
-              type="button"
-              className={className}
-              disabled={hasAnswered}
-              onClick={() => onScenarioAnswer(step.id, index)}
-            >
-              {option.text}
-            </button>
-          );
+          if (!hasAnswered) className += ' option-card-idle';
+          else if (option.correct) className += ' option-card-correct';
+          else if (isSelected) className += ' option-card-incorrect';
+          else className += ' option-card-muted';
+          return <button key={option.text} type="button" className={className} disabled={hasAnswered} onClick={() => onScenarioAnswer(step.id, index, option.correct)}>{option.text}</button>;
         })}
       </div>
-
-      {selectedOption && (
-        <div
-          className={`feedback-card ${
-            selectedOption.correct ? 'feedback-card-correct' : 'feedback-card-incorrect'
-          }`}
-        >
-          {selectedOption.feedback}
-        </div>
-      )}
+      {selectedOption && <div className={`feedback-card ${selectedOption.correct ? 'feedback-card-correct' : 'feedback-card-incorrect'}`}>{selectedOption.feedback}</div>}
     </div>
   );
 }
@@ -1009,133 +626,39 @@ function ChecklistCard({
       <div className="checklist-stack">
         {items.map((item) => {
           const isChecked = checkedItems.includes(item);
-
-          return (
-            <button
-              key={item}
-              type="button"
-              className={`check-row ${isChecked ? 'check-row-active' : ''}`}
-              onClick={() => onToggleChecklist(stepId, item)}
-            >
-              {isChecked ? (
-                <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
-              ) : (
-                <Circle size={18} className="text-brand-red shrink-0" />
-              )}
-              <span>{item}</span>
-            </button>
-          );
+          return <button key={item} type="button" className={`check-row ${isChecked ? 'check-row-active' : ''}`} onClick={() => onToggleChecklist(stepId, item)}>{isChecked ? <CheckCircle2 size={18} className="text-emerald-600 shrink-0" /> : <Circle size={18} className="text-brand-red shrink-0" />}<span>{item}</span></button>;
         })}
       </div>
     </div>
   );
 }
 
-function KnowledgeBaseSheet({
-  isOpen,
-  onClose,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-}) {
+function KnowledgeBaseSheet({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [openItems, setOpenItems] = useState<string[]>([]);
-
-  useEffect(() => {
-    if (!isOpen) {
-      setOpenItems([]);
-    }
-  }, [isOpen]);
-
-  const toggleItem = (key: string) => {
-    setOpenItems((current) =>
-      current.includes(key)
-        ? current.filter((item) => item !== key)
-        : [...current, key],
-    );
-  };
-
-  if (!isOpen) {
-    return null;
-  }
+  useEffect(() => { if (!isOpen) setOpenItems([]); }, [isOpen]);
+  if (!isOpen) return null;
+  const toggle = (key: string) => setOpenItems((current) => current.includes(key) ? current.filter((item) => item !== key) : [...current, key]);
 
   return (
     <AnimatePresence>
-      <motion.div
-        className="kb-overlay"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-      >
-        <button
-          type="button"
-          className="kb-backdrop"
-          aria-label="Close knowledge base"
-          onClick={onClose}
-        />
-        <motion.section
-          className="kb-sheet"
-          initial={{ y: '100%' }}
-          animate={{ y: 0 }}
-          exit={{ y: '100%' }}
-          transition={{ duration: 0.25, ease: 'easeOut' }}
-        >
+      <motion.div className="kb-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+        <button type="button" className="kb-backdrop" aria-label="Close knowledge base" onClick={onClose} />
+        <motion.section className="kb-sheet" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} transition={{ duration: 0.25, ease: 'easeOut' }}>
           <div className="kb-handle" />
           <div className="kb-header">
             <div>
               <p className="eyebrow">Knowledge Base</p>
               <h2 className="kb-title">The Den Rewards FAQ</h2>
-              <p className="kb-copy">
-                Quick answers for common guest questions and checkout situations.
-              </p>
+              <p className="kb-copy">Quick answers for common guest questions and checkout situations.</p>
             </div>
-            <button
-              type="button"
-              className="kb-close"
-              aria-label="Close knowledge base"
-              onClick={onClose}
-            >
-              <X size={18} />
-            </button>
+            <button type="button" className="kb-close" aria-label="Close knowledge base" onClick={onClose}><X size={18} /></button>
           </div>
           <div className="kb-content">
-            {FAQ_SECTIONS.map((section) => (
-              <div key={section.title} className="kb-section">
-                <p className="kb-section-title">{section.title}</p>
-                <div className="kb-accordion">
-                  {section.items.map((item) => {
-                    const key = `${section.title}:${item.question}`;
-                    const isExpanded = openItems.includes(key);
-
-                    return (
-                      <div key={key} className="kb-item">
-                        <button
-                          type="button"
-                          className="kb-question"
-                          onClick={() => toggleItem(key)}
-                        >
-                          <span>{item.question}</span>
-                          <ChevronDown
-                            size={18}
-                            className={isExpanded ? 'kb-chevron kb-chevron-open' : 'kb-chevron'}
-                          />
-                        </button>
-                        {isExpanded && (
-                          <div className="kb-answer">
-                            <p>{item.guestAnswer}</p>
-                            {item.teamNote && (
-                              <div className="kb-note">
-                                <p className="coach-note-title">Team note</p>
-                                <p>{item.teamNote}</p>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
+            {FAQ_SECTIONS.map((section) => <div key={section.title} className="kb-section"><p className="kb-section-title">{section.title}</p><div className="kb-accordion">{section.items.map((item) => {
+              const key = `${section.title}:${item.question}`;
+              const expanded = openItems.includes(key);
+              return <div key={key} className="kb-item"><button type="button" className="kb-question" onClick={() => toggle(key)}><span>{item.question}</span><ChevronDown size={18} className={expanded ? 'kb-chevron kb-chevron-open' : 'kb-chevron'} /></button>{expanded && <div className="kb-answer"><p>{item.guestAnswer}</p>{item.teamNote && <div className="kb-note"><p className="coach-note-title">Team note</p><p>{item.teamNote}</p></div>}</div>}</div>;
+            })}</div></div>)}
           </div>
         </motion.section>
       </motion.div>

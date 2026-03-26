@@ -198,6 +198,95 @@
   @apply w-full;
 }
 
+.onboarding-card,
+.training-summary-card,
+.module-preview-card,
+.media-placeholder-card {
+  @apply rounded-[22px] border border-brand-brown/10 bg-white px-4 py-4;
+}
+
+.onboarding-card {
+  @apply text-left;
+}
+
+.form-stack {
+  @apply mt-3 space-y-3;
+}
+
+.field-label {
+  @apply block text-left;
+}
+
+.field-label span {
+  @apply mb-2 block text-sm font-semibold text-brand-brown;
+}
+
+.field-input-wrap {
+  @apply flex items-center gap-2 rounded-[18px] border border-brand-brown/10 bg-brand-alt px-3 py-3 text-brand-brown;
+}
+
+.field-select-wrap {
+  @apply pr-2;
+}
+
+.field-input {
+  @apply w-full border-0 bg-transparent p-0 text-sm text-brand-brown outline-none;
+}
+
+.field-select {
+  appearance: none;
+}
+
+.module-preview-grid,
+.media-placeholder-grid {
+  @apply grid gap-3;
+}
+
+.module-preview-top {
+  @apply mb-3 flex items-center justify-between gap-2;
+}
+
+.module-preview-icon,
+.media-placeholder-icon {
+  @apply inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-alt text-brand-red;
+}
+
+.module-preview-title,
+.media-placeholder-title,
+.training-summary-name {
+  @apply font-display text-xl font-semibold text-brand-brown;
+}
+
+.module-preview-copy,
+.media-placeholder-copy,
+.training-summary-copy {
+  @apply mt-2 text-sm leading-6 text-brand-dark/72;
+}
+
+.training-summary-card {
+  @apply mb-4 flex items-center justify-between gap-3;
+}
+
+.training-summary-score {
+  @apply rounded-full bg-brand-red px-4 py-2 text-sm font-semibold text-white;
+}
+
+.module-strip {
+  @apply mb-4 flex flex-wrap gap-2;
+}
+
+.module-pill {
+  @apply inline-flex items-center gap-2 rounded-full border border-brand-brown/10 bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-brand-brown/70;
+}
+
+.module-pill-current {
+  @apply border-brand-red/20 bg-brand-red/5 text-brand-red;
+}
+
+.module-heading-top {
+  @apply mb-3 flex items-center justify-between gap-3;
+}
+
 .manager-return {
   @apply mx-auto block border-0 bg-transparent px-2 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-brand-brown/40;
 }
@@ -314,6 +403,22 @@
 
 .knowledge-link-inline {
   @apply mt-4;
+}
+
+.submission-state {
+  @apply mt-4 rounded-[18px] border px-4 py-3 text-sm leading-6;
+}
+
+.submission-state-success {
+  @apply border-emerald-300 bg-emerald-50 text-emerald-800;
+}
+
+.submission-state-error {
+  @apply border-brand-red/25 bg-brand-red/5 text-brand-red;
+}
+
+.submission-state-pending {
+  @apply border-brand-brown/10 bg-brand-alt text-brand-brown;
 }
 
 .path-header {
