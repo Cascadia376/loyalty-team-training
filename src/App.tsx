@@ -3,7 +3,9 @@ import { AnimatePresence, motion } from 'motion/react';
 import {
   ArrowLeft,
   ArrowRight,
+  BookOpen,
   CheckCircle2,
+  ChevronDown,
   Circle,
   ClipboardList,
   Crown,
@@ -11,6 +13,7 @@ import {
   ShieldCheck,
   Store,
   Users,
+  X,
 } from 'lucide-react';
 
 type PathKey = 'team' | 'manager';
@@ -55,6 +58,143 @@ interface StoredState {
   acknowledgedSteps: string[];
   completedPaths: PathKey[];
 }
+
+interface FaqItem {
+  question: string;
+  guestAnswer: string;
+  teamNote?: string;
+}
+
+interface FaqSection {
+  title: string;
+  items: FaqItem[];
+}
+
+const FAQ_SECTIONS: FaqSection[] = [
+  {
+    title: 'Program Basics',
+    items: [
+      {
+        question: 'What is The Den Rewards program?',
+        guestAnswer:
+          'The program rewards guests every time they shop. They earn points on purchases and can use those points for money off future visits.',
+        teamNote:
+          'Keep it simple: earn points now, redeem later, and higher tiers increase value over time.',
+      },
+      {
+        question: 'How do guests earn points, and what are they worth?',
+        guestAnswer:
+          'Guests earn 10 points for every $1 spent. Every 1,000 points equals $1 in rewards.',
+        teamNote:
+          'A simple value shortcut is “about $1 back for every $100 spent.” Avoid detailed math unless the guest asks.',
+      },
+      {
+        question: 'How long does a tier last?',
+        guestAnswer:
+          'Once a guest reaches a tier, they keep that status for one full year.',
+      },
+      {
+        question: 'What happens if an account is inactive?',
+        guestAnswer:
+          'Points stay active as long as the account stays active. If there is no activity for two years, the account expires.',
+        teamNote:
+          'If asked, mention that reminder messages go out before points expire.',
+      },
+      {
+        question: 'Is there a signup bonus?',
+        guestAnswer:
+          'Yes. Guests who sign up early receive bonus points for joining.',
+        teamNote:
+          'Keep the wording aligned to launch materials and mention the bonus without over-explaining thresholds.',
+      },
+      {
+        question: 'How valuable is the program?',
+        guestAnswer:
+          'Most guests earn about $1 back for every $100 they spend, and they earn rewards faster as they move into higher tiers.',
+      },
+    ],
+  },
+  {
+    title: 'Guest Questions',
+    items: [
+      {
+        question: 'Can points be used on alcohol?',
+        guestAnswer:
+          'Yes. Points can be used like money toward most purchases in the store.',
+        teamNote: 'Tobacco, lottery, and bottle deposits are excluded.',
+      },
+      {
+        question: 'Do points expire?',
+        guestAnswer:
+          'Points stay active as long as the account is active. If there is no activity for two years, the account expires.',
+      },
+      {
+        question: 'Can a guest use points right away?',
+        guestAnswer:
+          'Points are ready to use on the next visit. They cannot be earned and redeemed on the same day.',
+        teamNote:
+          'Points become available about 24 hours after the purchase.',
+      },
+      {
+        question: 'Does a guest lose their tier if they stop shopping?',
+        guestAnswer:
+          'No. Once a guest reaches a tier, they keep it for a full year from the date they reached it.',
+      },
+      {
+        question: 'How can a guest check their points?',
+        guestAnswer:
+          'Their points balance appears on the receipt and can also be viewed through their loyalty account.',
+      },
+    ],
+  },
+  {
+    title: 'POS Troubleshooting',
+    items: [
+      {
+        question: 'What if points do not appear immediately?',
+        guestAnswer:
+          'Points appear after the transaction is completed and will be available for the next visit.',
+      },
+      {
+        question: 'What if the guest wants to redeem but does not have enough points?',
+        guestAnswer:
+          'Let them know they are close to their first reward and likely need only another visit or two.',
+      },
+      {
+        question: 'What if the guest forgot they were a member?',
+        guestAnswer:
+          'Look up the account using the guest’s phone number.',
+      },
+      {
+        question: 'What if the guest asks why they cannot redeem today?',
+        guestAnswer:
+          'Points activate for the next visit so everyone earns rewards the same way.',
+      },
+    ],
+  },
+  {
+    title: 'How To Talk About It',
+    items: [
+      {
+        question: 'What is the best checkout invitation?',
+        guestAnswer:
+          'A short, natural invitation works best: ask if they are part of the new loyalty program and mention that they earn points toward money off future purchases.',
+        teamNote:
+          'If the guest is interested, move into signup and mention the bonus points.',
+      },
+      {
+        question: 'What should I say when the store is busy?',
+        guestAnswer:
+          'Use the short version: “Want to earn points on today’s purchase?”',
+      },
+      {
+        question: 'What should I say to a regular guest?',
+        guestAnswer:
+          'Try: “You shop here often. Our new loyalty program lets you earn rewards every time you visit.”',
+      },
+    ],
+  },
+];
 
 const PATHS: PathDefinition[] = [
   {
@@ -361,6 +501,7 @@ export default function App() {
   const [acknowledgedSteps, setAcknowledgedSteps] = useState<string[]>([]);
   const [completedPaths, setCompletedPaths] = useState<PathKey[]>([]);
   const [managerTapCount, setManagerTapCount] = useState(0);
+  const [isKnowledgeBaseOpen, setIsKnowledgeBaseOpen] = useState(false);
 
   useEffect(() => {
     const initial = getInitialState();
@@ -424,6 +565,7 @@ export default function App() {
             completedPaths={completedPaths}
             onStartTraining={() => setActivePath('team')}
             onOpenManager={() => setActivePath('manager')}
+            onOpenKnowledgeBase={() => setIsKnowledgeBaseOpen(true)}
           />
         ) : (
           <PathExperience
@@ -458,6 +600,7 @@ export default function App() {
                 current.includes(stepId) ? current : [...current, stepId],
               );
             }}
+            onOpenKnowledgeBase={() => setIsKnowledgeBaseOpen(true)}
             onPrev={() => {
               setCurrentStepByPath((current) => ({
                 ...current,
@@ -487,6 +630,10 @@ export default function App() {
             }}
           />
         )}
+        <KnowledgeBaseSheet
+          isOpen={isKnowledgeBaseOpen}
+          onClose={() => setIsKnowledgeBaseOpen(false)}
+        />
       </div>
     </div>
   );
@@ -496,10 +643,12 @@ function HomeScreen({
   completedPaths,
   onStartTraining,
   onOpenManager,
+  onOpenKnowledgeBase,
 }: {
   completedPaths: PathKey[];
   onStartTraining: () => void;
   onOpenManager: () => void;
+  onOpenKnowledgeBase: () => void;
 }) {
   const teamPath = PATHS.find((path) => path.key === 'team');
   const teamComplete = completedPaths.includes('team');
@@ -550,6 +699,14 @@ function HomeScreen({
           <div className="hero-meta">
             <span>{teamPath.steps.length} modules</span>
           </div>
+          <button
+            type="button"
+            className="hero-secondary-link"
+            onClick={onOpenKnowledgeBase}
+          >
+            <BookOpen size={16} />
+            Knowledge Base
+          </button>
         </div>
       </section>
 
@@ -573,6 +730,7 @@ function PathExperience({
   onScenarioAnswer,
   onToggleChecklist,
   onAcknowledge,
+  onOpenKnowledgeBase,
   onPrev,
   onNext,
 }: {
@@ -586,6 +744,7 @@ function PathExperience({
   onScenarioAnswer: (stepId: string, answerIndex: number) => void;
   onToggleChecklist: (stepId: string, item: string) => void;
   onAcknowledge: (stepId: string) => void;
+  onOpenKnowledgeBase: () => void;
   onPrev: () => void;
   onNext: () => void;
 }) {
@@ -730,6 +889,21 @@ function PathExperience({
                 </div>
               </div>
             )}
+
+            {path.key === 'team' && currentStep.kind === 'signoff' && (
+              <div className="support-card">
+                <p className="coach-note-title">Need a refresher?</p>
+                <p>Open the knowledge base or ask your store manager if you are unsure.</p>
+                <button
+                  type="button"
+                  className="knowledge-link-inline"
+                  onClick={onOpenKnowledgeBase}
+                >
+                  <BookOpen size={16} />
+                  Open Knowledge Base
+                </button>
+              </div>
+            )}
           </motion.section>
         </AnimatePresence>
       </main>
@@ -854,5 +1028,117 @@ function ChecklistCard({
         })}
       </div>
     </div>
+  );
+}
+
+function KnowledgeBaseSheet({
+  isOpen,
+  onClose,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+}) {
+  const [openItems, setOpenItems] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setOpenItems([]);
+    }
+  }, [isOpen]);
+
+  const toggleItem = (key: string) => {
+    setOpenItems((current) =>
+      current.includes(key)
+        ? current.filter((item) => item !== key)
+        : [...current, key],
+    );
+  };
+
+  if (!isOpen) {
+    return null;
+  }
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        className="kb-overlay"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+      >
+        <button
+          type="button"
+          className="kb-backdrop"
+          aria-label="Close knowledge base"
+          onClick={onClose}
+        />
+        <motion.section
+          className="kb-sheet"
+          initial={{ y: '100%' }}
+          animate={{ y: 0 }}
+          exit={{ y: '100%' }}
+          transition={{ duration: 0.25, ease: 'easeOut' }}
+        >
+          <div className="kb-handle" />
+          <div className="kb-header">
+            <div>
+              <p className="eyebrow">Knowledge Base</p>
+              <h2 className="kb-title">The Den Rewards FAQ</h2>
+              <p className="kb-copy">
+                Quick answers for common guest questions and checkout situations.
+              </p>
+            </div>
+            <button
+              type="button"
+              className="kb-close"
+              aria-label="Close knowledge base"
+              onClick={onClose}
+            >
+              <X size={18} />
+            </button>
+          </div>
+          <div className="kb-content">
+            {FAQ_SECTIONS.map((section) => (
+              <div key={section.title} className="kb-section">
+                <p className="kb-section-title">{section.title}</p>
+                <div className="kb-accordion">
+                  {section.items.map((item) => {
+                    const key = `${section.title}:${item.question}`;
+                    const isExpanded = openItems.includes(key);
+
+                    return (
+                      <div key={key} className="kb-item">
+                        <button
+                          type="button"
+                          className="kb-question"
+                          onClick={() => toggleItem(key)}
+                        >
+                          <span>{item.question}</span>
+                          <ChevronDown
+                            size={18}
+                            className={isExpanded ? 'kb-chevron kb-chevron-open' : 'kb-chevron'}
+                          />
+                        </button>
+                        {isExpanded && (
+                          <div className="kb-answer">
+                            <p>{item.guestAnswer}</p>
+                            {item.teamNote && (
+                              <div className="kb-note">
+                                <p className="coach-note-title">Team note</p>
+                                <p>{item.teamNote}</p>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </motion.section>
+      </motion.div>
+    </AnimatePresence>
   );
 }
