@@ -589,6 +589,8 @@ function ScenarioCard({
   selectedOption: ScenarioOption | undefined;
   onScenarioAnswer: (stepId: string, answerIndex: number, isCorrect: boolean) => void;
 }) {
+  const hasCorrectAnswer = Boolean(selectedOption?.correct);
+
   return (
     <div className="scenario-block">
       <div className="prompt-card"><p className="prompt-label">Scenario</p><p className="prompt-text">{step.prompt}</p></div>
@@ -598,13 +600,14 @@ function ScenarioCard({
           const hasAnswered = selectedAnswer !== undefined;
           let className = 'option-card';
           if (!hasAnswered) className += ' option-card-idle';
-          else if (option.correct) className += ' option-card-correct';
+          else if (hasCorrectAnswer && option.correct) className += ' option-card-correct';
+          else if (hasCorrectAnswer && !option.correct) className += ' option-card-muted';
           else if (isSelected) className += ' option-card-incorrect';
-          else className += ' option-card-muted';
-          return <button key={option.text} type="button" className={className} disabled={hasAnswered} onClick={() => onScenarioAnswer(step.id, index, option.correct)}>{option.text}</button>;
+          else className += ' option-card-idle';
+          return <button key={option.text} type="button" className={className} disabled={hasCorrectAnswer} onClick={() => onScenarioAnswer(step.id, index, option.correct)}>{option.text}</button>;
         })}
       </div>
-      {selectedOption && <div className={`feedback-card ${selectedOption.correct ? 'feedback-card-correct' : 'feedback-card-incorrect'}`}>{selectedOption.feedback}</div>}
+      {selectedOption && <div className={`feedback-card ${selectedOption.correct ? 'feedback-card-correct' : 'feedback-card-incorrect'}`}>{selectedOption.correct ? selectedOption.feedback : `${selectedOption.feedback} Try again.`}</div>}
     </div>
   );
 }
