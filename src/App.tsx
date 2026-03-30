@@ -72,6 +72,9 @@ function isStepComplete(
     acknowledgedSteps: string[];
   },
 ) {
+  if (step.kind === 'brief') {
+    return true;
+  }
   if (step.kind === 'scenario') {
     const index = state.scenarioAnswers[step.id];
     return index !== undefined && Boolean(step.options?.[index]?.correct);
@@ -370,10 +373,9 @@ function HomeScreen({
         <p className="hero-copy">
           Three modules covering loyalty basics, POS execution, and account management.
         </p>
-        <div className="hero-art">
-          <img src="/The-Den_Bears-All.png" alt="The Den bear family" className="hero-bears" />
-          <img src="/The-Den_Bears-Black-Bear.png" alt="" aria-hidden="true" className="hero-bear-accent" />
-        </div>
+          <div className="hero-art">
+            <img src="/The-Den_Bears-All.png" alt="The Den bear family" className="hero-bears" />
+          </div>
         <div className="hero-actions">
           <div className="onboarding-card">
             <p className="prompt-label">Before training starts</p>
@@ -437,7 +439,6 @@ function HomeScreen({
           </button>
         </div>
       </section>
-      <button type="button" className="manager-return" onClick={onOpenManager}>Manager tools</button>
     </main>
   );
 }
@@ -487,12 +488,11 @@ function PathExperience({
   const selectedOption = selectedAnswer !== undefined && currentStep.options ? currentStep.options[selectedAnswer] : undefined;
   const checkedItems = checklistState[currentStep.id] ?? [];
   const allChecklistItemsChecked = currentStep.checklist ? currentStep.checklist.every((item) => checkedItems.includes(item)) : false;
-  const isAcknowledged = acknowledgedSteps.includes(currentStep.id);
-  const canAdvance = currentStep.kind === 'scenario'
-    ? Boolean(selectedOption?.correct)
-    : currentStep.kind === 'checklist' || currentStep.kind === 'signoff'
-      ? allChecklistItemsChecked
-      : isAcknowledged;
+    const canAdvance = currentStep.kind === 'scenario'
+      ? Boolean(selectedOption?.correct)
+      : currentStep.kind === 'checklist' || currentStep.kind === 'signoff'
+        ? allChecklistItemsChecked
+        : true;
   const progress = ((stepIndex + 1) / path.steps.length) * 100;
   const isLastStep = stepIndex === path.steps.length - 1;
   const moduleKey = currentStep.module;
@@ -541,7 +541,6 @@ function PathExperience({
           <motion.section key={currentStep.id} className="module-card" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -18 }} transition={{ duration: 0.22, ease: 'easeOut' }}>
             {currentModule && (
               <div className="module-heading-top">
-                <p className="eyebrow">{currentModule.label}</p>
                 <span className="mini-badge">{currentModuleIndex + 1} / {currentModuleSteps.length} in module</span>
               </div>
             )}
@@ -554,7 +553,6 @@ function PathExperience({
             {currentStep.script && <div className="script-card"><MessageSquareQuote size={18} className="script-icon" /><p>{currentStep.script}</p></div>}
             {currentStep.bullets && <ul className="bullet-list bullet-list-card">{currentStep.bullets.map((item) => <li key={item}>{item}</li>)}</ul>}
             {currentStep.mediaPlaceholders && <div className="media-placeholder-grid">{currentStep.mediaPlaceholders.map((item) => <div key={item.title} className="media-placeholder-card"><div className="media-placeholder-icon"><ImagePlus size={18} /></div><p className="media-placeholder-title">{item.title}</p><p className="media-placeholder-copy">{item.body}</p></div>)}</div>}
-            {currentStep.kind === 'brief' && <button type="button" className={`action-tile ${isAcknowledged ? 'action-tile-complete' : ''}`} onClick={() => onAcknowledge(currentStep.id)}><CheckCircle2 size={18} /><span>{isAcknowledged ? 'Module reviewed' : 'Mark as understood'}</span></button>}
             {currentStep.kind === 'scenario' && currentStep.prompt && currentStep.options && <ScenarioCard step={currentStep} selectedAnswer={selectedAnswer} selectedOption={selectedOption} onScenarioAnswer={onScenarioAnswer} />}
             {currentStep.checklist && <ChecklistCard stepId={currentStep.id} items={currentStep.checklist} checkedItems={checkedItems} onToggleChecklist={onToggleChecklist} />}
             {currentStep.coachNote && <div className="coach-note"><ShieldCheck size={18} /><div><p className="coach-note-title">Coaching note</p><p>{currentStep.coachNote}</p></div></div>}

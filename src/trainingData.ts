@@ -58,11 +58,17 @@ export interface FaqSection {
 export const STORE_OPTIONS = [
   'Crown Isle (Courtenay)',
   'View Royal',
-  'Cadboro Bay',
-  'Langford',
-  'Parksville',
   'Port Alberni',
+  'Parksville',
+  'Nanoose Bay',
+  'Langford',
+  'Royal Bay',
+  'Allandale',
+  'Hatley Park',
+  'Eagle Creek',
+  'Uptown',
   'Quadra Village',
+  'Caddy Bay',
   'Other store',
 ] as const;
 
@@ -236,7 +242,7 @@ export const TEAM_STEPS: Step[] = [
     module: 'basics',
     kind: 'brief',
     eyebrow: 'Loyalty Basics',
-    title: 'Know the point value',
+    title: 'POINTS',
     summary:
       'Guests do not need a long explanation. They need a clear answer that feels easy to understand.',
     highlights: [
