@@ -337,6 +337,62 @@ export const TEAM_STEPS: Step[] = [
     ],
   },
   {
+    id: 'basics-module-quiz-2',
+    module: 'basics',
+    kind: 'scenario',
+    eyebrow: 'Loyalty Basics',
+    title: 'Module quiz',
+    summary:
+      'Use the guest-friendly response that matches the launch standard.',
+    prompt:
+      'Which reminder best matches the Quick Tips slide?',
+    options: [
+      {
+        text: 'Wait for the answer. Give guests time to think.',
+        correct: true,
+        feedback: 'Correct. That is the right behavior at the till.',
+      },
+      {
+        text: 'Move quickly into the next sentence so there is no awkward pause.',
+        correct: false,
+        feedback: 'Not correct. The guest needs a moment to answer.',
+      },
+      {
+        text: 'Push a little harder if the guest does not answer right away.',
+        correct: false,
+        feedback: 'Not correct. The standard is calm, natural, and low pressure.',
+      },
+    ],
+  },
+  {
+    id: 'basics-module-quiz-3',
+    module: 'basics',
+    kind: 'scenario',
+    eyebrow: 'Loyalty Basics',
+    title: 'Module quiz',
+    summary:
+      'Finish the module by choosing the tone that fits the guide.',
+    prompt:
+      'Which coaching direction is right for this launch ask?',
+    options: [
+      {
+        text: 'Keep it natural and conversational.',
+        correct: true,
+        feedback: 'Correct. That is the tone standard from the guide.',
+      },
+      {
+        text: 'Sound more salesy so the guest feels urgency.',
+        correct: false,
+        feedback: 'Not correct. The ask should stay natural, not salesy.',
+      },
+      {
+        text: 'Lead with all the tier details before asking.',
+        correct: false,
+        feedback: 'Not correct. Lead with the invitation, not a long explanation.',
+      },
+    ],
+  },
+  {
     id: 'pos-tiers',
     module: 'pos',
     kind: 'brief',
@@ -350,7 +406,7 @@ export const TEAM_STEPS: Step[] = [
       { label: 'Grizzly', value: '50,000+ pts', note: '15 pts / $1' },
     ],
     coachNote:
-      'Use tiers as supporting context, not the main pitch. Lead with the invitation and reward value.',
+      'Use tiers as supporting context, not the main pitch. Lead with the invitation and reward value. Tier progress is based on points earned from dollars spent, not bonus or referral points.',
   },
   {
     id: 'pos-points',
@@ -428,32 +484,93 @@ export const TEAM_STEPS: Step[] = [
     coachNote: 'The standard is still to invite. The only change is the shorter script.',
   },
   {
+    id: 'pos-module-quiz-2',
+    module: 'pos',
+    kind: 'scenario',
+    eyebrow: 'Signup, Earn, Redeem',
+    title: 'Module quiz',
+    summary:
+      'Check the key value language before moving on.',
+    prompt:
+      'Which value statement is correct?',
+    options: [
+      {
+        text: 'Guests earn 10 points for every $1, and 1,000 points equals $1 in rewards.',
+        correct: true,
+        feedback: 'Correct. That is the core point value language.',
+      },
+      {
+        text: 'Guests earn 1 point for every $10, and 100 points equals $1 in rewards.',
+        correct: false,
+        feedback: 'Not correct. That changes both the earn rate and redemption value.',
+      },
+      {
+        text: 'Guests redeem 1,000 points for $10 off.',
+        correct: false,
+        feedback: 'Not correct. 1,000 points equals $1, not $10.',
+      },
+    ],
+  },
+  {
+    id: 'pos-module-quiz-3',
+    module: 'pos',
+    kind: 'scenario',
+    eyebrow: 'Signup, Earn, Redeem',
+    title: 'Module quiz',
+    summary:
+      'Finish the module with the exact enrollment requirement.',
+    prompt:
+      'Which set of guest details is required during enrollment?',
+    options: [
+      {
+        text: 'First name, last name, and phone number.',
+        correct: true,
+        feedback: 'Correct. Those are the required enrollment details in the guide.',
+      },
+      {
+        text: 'Email address only.',
+        correct: false,
+        feedback: 'Not correct. The workflow uses first name, last name, and phone number.',
+      },
+      {
+        text: 'Phone number and home address.',
+        correct: false,
+        feedback: 'Not correct. Home address is not part of the signup steps here.',
+      },
+    ],
+  },
+  {
     id: 'account-intro',
     module: 'account',
     kind: 'brief',
     eyebrow: 'Account Management',
     title: 'Account access',
     summary:
-      'After signup, guests may ask where they can view their points or rewards. Keep the answer practical and simple.',
-    bullets: ['Receipt balance', 'Web wallet', 'Wallet pass', 'Native app'],
+      'After signup, guide guests to the best access option first, then use wallet pass or web wallet as backups.',
+    bullets: [
+      'Cascadia Den Rewards App',
+      'Wallet pass',
+      'Web wallet',
+      'Receipt balance',
+    ],
   },
   {
-    id: 'account-web-wallet',
+    id: 'account-native-app',
     module: 'account',
     kind: 'brief',
     eyebrow: 'Account Management',
-    title: 'Web wallet',
+    title: 'Cascadia Den Rewards App',
     summary:
-      'Use the web wallet as the simplest account-access option for guests who do not want the app.',
+      'Lead with the app as the main loyalty destination for guests who want the full rewards experience.',
     bullets: [
-      'Use it to view points, rewards, and account details',
-      'Position it as the easiest fallback option',
-      'Keep staff language focused on access, not troubleshooting',
+      'Use it for rewards visibility and account access',
+      'Position it as the best overall loyalty experience',
+      'Keep the explanation short and action-oriented',
     ],
     mediaPlaceholders: [
       {
-        title: 'Web wallet screenshots',
-        body: 'Add screenshots for points balance, rewards, and profile access here.',
+        title: 'App screenshots',
+        body: 'Add app home, rewards, and account screenshots here.',
       },
     ],
   },
@@ -464,9 +581,9 @@ export const TEAM_STEPS: Step[] = [
     eyebrow: 'Account Management',
     title: 'Wallet pass',
     summary:
-      'Use wallet pass as the simple grab-and-go option when guests want quick access on their phone.',
+      'Use wallet pass as the next-best option when guests want quick phone access without using the app.',
     bullets: [
-      'Position it as the easy-access option',
+      'Position it as the next-best easy-access option',
       'Use it for quick lookup at checkout',
       'Point guests to setup help only when needed',
     ],
@@ -478,22 +595,22 @@ export const TEAM_STEPS: Step[] = [
     ],
   },
   {
-    id: 'account-native-app',
+    id: 'account-web-wallet',
     module: 'account',
     kind: 'brief',
     eyebrow: 'Account Management',
-    title: 'Native app',
+    title: 'Web wallet',
     summary:
-      'If the guest prefers the app, keep the explanation focused on checking rewards and account access.',
+      'Use the web wallet as the fallback option when the guest does not want the app or wallet pass.',
     bullets: [
-      'Use the app for rewards visibility and account access',
-      'Keep the explanation short and action-oriented',
+      'Use it to view points, rewards, and account details',
+      'Position it as the fallback access option',
       'Escalate technical questions to the store manager when needed',
     ],
     mediaPlaceholders: [
       {
-        title: 'Native app screenshots',
-        body: 'Add app home, rewards, and account screenshots here.',
+        title: 'Web wallet screenshots',
+        body: 'Add screenshots for points balance, rewards, and profile access here.',
       },
     ],
   },
@@ -521,6 +638,62 @@ export const TEAM_STEPS: Step[] = [
         text: 'There is no way to check points until you redeem them.',
         correct: false,
         feedback: 'Not correct. Guests can view their balance after signup.',
+      },
+    ],
+  },
+  {
+    id: 'account-module-quiz-2',
+    module: 'account',
+    kind: 'scenario',
+    eyebrow: 'Account Management',
+    title: 'Module quiz',
+    summary:
+      'Keep post-signup guidance practical and easy to follow.',
+    prompt:
+      'Which option should staff position first for guests who want the best loyalty experience?',
+    options: [
+      {
+        text: 'The Cascadia Den Rewards App.',
+        correct: true,
+        feedback: 'Correct. The app is the primary account-management option.',
+      },
+      {
+        text: 'The wallet pass only.',
+        correct: false,
+        feedback: 'Not correct. Wallet pass is useful, but the app is the preferred option.',
+      },
+      {
+        text: 'The web wallet only.',
+        correct: false,
+        feedback: 'Not correct. The web wallet is a fallback, not the first choice.',
+      },
+    ],
+  },
+  {
+    id: 'account-module-quiz-3',
+    module: 'account',
+    kind: 'scenario',
+    eyebrow: 'Account Management',
+    title: 'Module quiz',
+    summary:
+      'Finish by choosing the right staff response to technical questions.',
+    prompt:
+      'What should staff do if a guest needs deeper technical help with the app or wallet setup?',
+    options: [
+      {
+        text: 'Escalate the technical question to the store manager when needed.',
+        correct: true,
+        feedback: 'Correct. That matches the training guidance for technical help.',
+      },
+      {
+        text: 'Guess the steps and walk the guest through them anyway.',
+        correct: false,
+        feedback: 'Not correct. Do not improvise technical troubleshooting you are unsure about.',
+      },
+      {
+        text: 'Tell the guest there is no support for account access.',
+        correct: false,
+        feedback: 'Not correct. There is support, and the manager is the escalation path.',
       },
     ],
   },
