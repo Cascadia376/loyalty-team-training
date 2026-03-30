@@ -240,7 +240,7 @@ export default function App() {
             >
               <p className="topbar-kicker">The Den Rewards</p>
             </button>
-            <h1 className="topbar-title">Mobile Training Tool</h1>
+            <h1 className="topbar-title">Quick Team Guide</h1>
           </div>
         </header>
 
@@ -261,7 +261,6 @@ export default function App() {
               setActivePath('team');
             }}
             onOpenKnowledgeBase={() => setIsKnowledgeBaseOpen(true)}
-            onOpenManager={() => setActivePath('manager')}
           />
         ) : (
           <PathExperience
@@ -293,11 +292,6 @@ export default function App() {
                     : [...existing, item],
                 };
               });
-            }}
-            onAcknowledge={(stepId) => {
-              setAcknowledgedSteps((current) =>
-                current.includes(stepId) ? current : [...current, stepId],
-              );
             }}
             onOpenKnowledgeBase={() => setIsKnowledgeBaseOpen(true)}
             onPrev={() => {
@@ -350,7 +344,6 @@ function HomeScreen({
   onTraineeChange,
   onStartTraining,
   onOpenKnowledgeBase,
-  onOpenManager,
 }: {
   trainee: TraineeInfo;
   canStartTraining: boolean;
@@ -359,7 +352,6 @@ function HomeScreen({
   onTraineeChange: (trainee: TraineeInfo) => void;
   onStartTraining: () => void;
   onOpenKnowledgeBase: () => void;
-  onOpenManager: () => void;
 }) {
   return (
     <main className="screen-content screen-content-home">
@@ -371,7 +363,7 @@ function HomeScreen({
         <p className="eyebrow">The Den Rewards</p>
         <h2 className="hero-title">Team Training</h2>
         <p className="hero-copy">
-          Three modules covering loyalty basics, POS execution, and account management.
+          Invitation, quick responses, points, redemption, and enrollment steps for launch.
         </p>
           <div className="hero-art">
             <img src="/The-Den_Bears-All.png" alt="The Den bear family" className="hero-bears" />
@@ -458,7 +450,6 @@ function PathExperience({
   onBackToHome,
   onScenarioAnswer,
   onToggleChecklist,
-  onAcknowledge,
   onOpenKnowledgeBase,
   onPrev,
   onNext,
@@ -478,7 +469,6 @@ function PathExperience({
   onBackToHome: () => void;
   onScenarioAnswer: (stepId: string, answerIndex: number, isCorrect: boolean) => void;
   onToggleChecklist: (stepId: string, item: string) => void;
-  onAcknowledge: (stepId: string) => void;
   onOpenKnowledgeBase: () => void;
   onPrev: () => void;
   onNext: () => void | Promise<void>;

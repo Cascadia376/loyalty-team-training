@@ -56,8 +56,7 @@ export interface FaqSection {
 }
 
 export const STORE_OPTIONS = [
-  'Crown Isle (Courtenay)',
-  'View Royal',
+  'Crown Isle',
   'Port Alberni',
   'Parksville',
   'Nanoose Bay',
@@ -84,19 +83,19 @@ export const MODULE_CONFIG: Record<
   basics: {
     label: 'Loyalty Basics',
     shortLabel: 'Basics',
-    description: 'Program value, points, and tiers.',
+    description: 'Invitation, responses, and quick tips.',
     icon: Wallet,
   },
   pos: {
     label: 'Signup, Earn, Redeem',
     shortLabel: 'POS',
-    description: 'Checkout workflow and what to do in the POS.',
+    description: 'Points, tiers, redemption, and enrollment steps.',
     icon: Store,
   },
   account: {
     label: 'Account Management',
     shortLabel: 'Account',
-    description: 'Web wallet, wallet pass, and native app setup.',
+    description: 'Where guests can view points and rewards after signup.',
     icon: Smartphone,
   },
 };
@@ -108,36 +107,34 @@ export const FAQ_SECTIONS: FaqSection[] = [
       {
         question: 'What is The Den Rewards program?',
         guestAnswer:
-          'The program rewards guests every time they shop. They earn points on purchases and use them for money off future visits.',
-        teamNote:
-          'Keep it simple: earn points now, redeem later, and higher tiers increase value over time.',
+          'The Den Rewards lets guests earn points every time they shop and use those points for money off a future visit.',
+        teamNote: 'Keep it simple: join, earn points, redeem later.',
       },
       {
         question: 'How do guests earn points, and what are they worth?',
         guestAnswer:
           'Guests earn 10 points for every $1 spent. Every 1,000 points equals $1 in rewards.',
         teamNote:
-          'A simple value shortcut is “about $1 back for every $100 spent.” Avoid detailed math unless asked.',
+          'A simple shortcut is "about $1 back for every $100 spent." Avoid detailed math unless asked.',
+      },
+      {
+        question: 'What are the tiers?',
+        guestAnswer:
+          'Cub earns 10 points per dollar, Black Bear earns 12 points per dollar, and Grizzly earns 15 points per dollar.',
       },
       {
         question: 'How long does a tier last?',
-        guestAnswer:
-          'Once a guest reaches a tier, they keep that status for a full year.',
-      },
-      {
-        question: 'What happens if an account is inactive?',
-        guestAnswer:
-          'Points stay active as long as the account stays active. If there is no activity for two years, the account expires.',
+        guestAnswer: 'Once a guest reaches a tier, they keep that status for a full year.',
       },
       {
         question: 'Is there a signup bonus?',
         guestAnswer:
-          'Yes. Guests who sign up early receive bonus points for joining.',
+          'Yes. From April 17 to April 30, new members get 5,000 bonus points.',
       },
       {
-        question: 'How valuable is the program?',
+        question: 'Do points expire?',
         guestAnswer:
-          'Most guests earn about $1 back for every $100 they spend, and they earn rewards faster as they move into higher tiers.',
+          'Points stay active as long as the account stays active. If there is no activity for two years, the account expires.',
       },
     ],
   },
@@ -149,11 +146,6 @@ export const FAQ_SECTIONS: FaqSection[] = [
         guestAnswer:
           'Yes. Points can be used like money toward most purchases in the store.',
         teamNote: 'Tobacco, lottery, and bottle deposits are excluded.',
-      },
-      {
-        question: 'Do points expire?',
-        guestAnswer:
-          'Points stay active as long as the account is active. If there is no activity for two years, the account expires.',
       },
       {
         question: 'Can a guest use points right away?',
@@ -171,6 +163,10 @@ export const FAQ_SECTIONS: FaqSection[] = [
         guestAnswer:
           'Their points balance appears on the receipt and can also be viewed through their loyalty account.',
       },
+      {
+        question: 'What if a guest forgot they were a member?',
+        guestAnswer: 'Look up the account using the guest\'s phone number.',
+      },
     ],
   },
   {
@@ -187,14 +183,14 @@ export const FAQ_SECTIONS: FaqSection[] = [
           'Let them know they are close to their first reward and likely need only another visit or two.',
       },
       {
-        question: 'What if the guest forgot they were a member?',
-        guestAnswer:
-          'Look up the account using the guest’s phone number.',
-      },
-      {
         question: 'What if the guest asks why they cannot redeem today?',
         guestAnswer:
           'Points activate for the next visit so everyone earns rewards the same way.',
+      },
+      {
+        question: 'What details are required for signup?',
+        guestAnswer:
+          'Use first name, last name, and phone number, then confirm enrollment and let the guest know a welcome text will be sent.',
       },
     ],
   },
@@ -204,19 +200,18 @@ export const FAQ_SECTIONS: FaqSection[] = [
       {
         question: 'What is the best checkout invitation?',
         guestAnswer:
-          'A short, natural invitation works best: mention the loyalty program and that it earns points toward money off future purchases.',
-        teamNote:
-          'If the guest is interested, move into signup and mention the bonus points.',
+          'Use the standard invitation: "Have you signed up for our new loyalty program? From April 17 - 30 only, new members get 5,000 bonus points. Can I set that up for you?"',
+        teamNote: 'Keep it natural and conversational, not salesy.',
       },
       {
         question: 'What should I say when the store is busy?',
         guestAnswer:
-          'Use the short version: “Want to earn points on today’s purchase?”',
+          'Use the short version: "We just launched our new loyalty program. You get 5,000 bonus points when you sign up before April 30. Here is a QR code if you\'d like to join."',
       },
       {
-        question: 'What should I say to a regular guest?',
+        question: 'What should I say if the guest says no?',
         guestAnswer:
-          'Try: “You shop here often. Our new loyalty program lets you earn rewards every time you visit.”',
+          'Say: "That\'s okay! Here is a QR code if you\'d like to sign up later."',
       },
     ],
   },
@@ -224,239 +219,204 @@ export const FAQ_SECTIONS: FaqSection[] = [
 
 export const TEAM_STEPS: Step[] = [
   {
-    id: 'basics-intro',
+    id: 'basics-invitation',
     module: 'basics',
     kind: 'brief',
     eyebrow: 'Loyalty Basics',
-    title: 'Start with the core story',
+    title: 'The invitation',
     summary:
-      'This first module gives the simple language staff need for points, rewards, and tiers.',
-    bullets: [
-      'What The Den Rewards is',
-      'How points work',
-      'What tiers mean for guests',
-    ],
+      'Lead with the standard invitation. Keep it calm, clear, and easy to say at the till.',
+    script:
+      'Have you signed up for our new loyalty program? From April 17 - 30 only, new members get 5,000 bonus points. Can I set that up for you?',
+    coachNote: 'Pause and let the guest answer. Do not rush past the pause.',
   },
   {
-    id: 'basics-points',
+    id: 'basics-responses',
     module: 'basics',
     kind: 'brief',
     eyebrow: 'Loyalty Basics',
-    title: 'POINTS',
+    title: 'Handling responses',
     summary:
-      'Guests do not need a long explanation. They need a clear answer that feels easy to understand.',
+      'The response matters as much as the ask. Move smoothly into the next step or out of the conversation.',
     highlights: [
-      { label: 'Base earn', value: '10 pts / $1' },
-      { label: 'Reward value', value: '1,000 pts = $1' },
-      { label: 'Launch bonus', value: '5,000 pts', note: 'Mention the signup bonus during launch' },
+      {
+        label: 'If yes',
+        value: 'Begin enrollment immediately',
+        note: 'Confirm phone number and keep it smooth and quick.',
+      },
+      {
+        label: 'If no',
+        value: 'That\'s okay!',
+        note: 'Offer the QR code for later and move on cleanly.',
+      },
     ],
     bullets: [
-      'Use the simple explanation first',
-      'Avoid unnecessary point math',
-      'Focus on future reward value',
+      'No pressure and no second attempt',
+      'Keep it natural - conversational, not salesy',
+      'Wait for the answer before moving on',
     ],
   },
   {
-    id: 'basics-tiers',
+    id: 'basics-quick-tips',
     module: 'basics',
     kind: 'brief',
     eyebrow: 'Loyalty Basics',
-    title: 'Understand the tiers',
+    title: 'Quick tips',
     summary:
-      'Team members should understand the shape of the program without turning checkout into a tier lesson.',
-    highlights: [
-      { label: 'Cub', value: '10 pts / $1', note: 'Entry tier' },
-      { label: 'Black Bear', value: '12 pts / $1', note: 'Mid-tier' },
-      { label: 'Grizzly', value: '15 pts / $1', note: 'Top tier' },
+      'A few habits make the launch easier: stay conversational, wait for the answer, and use the short version when needed.',
+    bullets: [
+      'Keep it natural - conversational, not salesy',
+      'Wait for the answer - do not rush past the pause',
+      'Bonus ends soon - April 30',
     ],
-    coachNote:
-      'If the guest wants more detail, keep the answer short and move them toward the key benefit: rewards on future visits.',
+    script:
+      'We just launched our new loyalty program. You get 5,000 bonus points when you sign up before April 30. Here is a QR code if you\'d like to join.',
   },
   {
-    id: 'basics-value-check',
+    id: 'basics-response-check',
     module: 'basics',
     kind: 'scenario',
     eyebrow: 'Loyalty Basics',
-    title: 'Use the simple explanation',
+    title: 'Use the clean exit',
     summary:
-      'The best explanation is the one a guest understands immediately.',
-    prompt:
-      'A guest asks, “What is this actually worth?” Which answer is best at the till?',
+      'When the guest says no, keep the interaction positive and keep the line moving.',
+    prompt: 'The guest says, "No thanks." What should you say next?',
     options: [
       {
-        text: 'Most guests earn about $1 back for every $100 they spend, and they earn faster as they move into higher tiers.',
+        text: 'That\'s okay! Here is a QR code if you\'d like to sign up later.',
         correct: true,
-        feedback:
-          'Correct. It is simple, concrete, and still leaves room for deeper detail if asked.',
+        feedback: 'Correct. That matches the guide and keeps the interaction smooth.',
       },
       {
-        text: 'It depends on tier accumulation, annual qualification, and detailed point math.',
+        text: 'Let me quickly explain the tiers before you decide.',
         correct: false,
-        feedback:
-          'Not correct. That answer is too technical for a checkout conversation.',
+        feedback: 'Not correct. Do not push for a second conversation after a no.',
       },
       {
-        text: 'It is hard to explain, but the manager can walk through the spreadsheet later.',
+        text: 'Are you sure? It only takes a second.',
         correct: false,
-        feedback:
-          'Not correct. Team members need a simple guest-friendly explanation.',
+        feedback: 'Not correct. The standard is no pressure and a clean exit.',
       },
     ],
   },
   {
-    id: 'pos-intro',
+    id: 'pos-tiers',
     module: 'pos',
     kind: 'brief',
     eyebrow: 'Signup, Earn, Redeem',
-    title: 'This module is about the till workflow',
+    title: 'Loyalty tiers',
     summary:
-      'Focus on the staff actions that happen in real transactions: signup, earning points, and redeeming rewards.',
+      'You do not need to teach the whole program at checkout, but you do need the basics right.',
+    highlights: [
+      { label: 'Cub', value: '0 - 9,999 pts', note: '10 pts / $1' },
+      { label: 'Black Bear', value: '10,000 - 49,999 pts', note: '12 pts / $1' },
+      { label: 'Grizzly', value: '50,000+ pts', note: '15 pts / $1' },
+    ],
+    coachNote:
+      'Use tiers as supporting context, not the main pitch. Lead with the invitation and reward value.',
+  },
+  {
+    id: 'pos-points',
+    module: 'pos',
+    kind: 'brief',
+    eyebrow: 'Signup, Earn, Redeem',
+    title: 'POINTS',
+    summary:
+      'The simplest value language is the easiest to remember and the easiest for guests to understand.',
+    highlights: [
+      { label: 'Earn rate', value: '10 pts / $1' },
+      { label: 'Reward value', value: '1,000 pts = $1' },
+      { label: 'Redemption', value: '5,000 pts = $5 off', note: '10,000 pts = $10 off' },
+    ],
     bullets: [
-      'How to sign a guest up',
-      'How to explain earning and redemption timing',
-      'How to keep the line moving',
+      'Guests earn points today and use them on a future visit',
+      'Use simple value language first',
+      'Phone number is the fastest account lookup',
     ],
   },
   {
-    id: 'pos-signup',
+    id: 'pos-enrollment',
     module: 'pos',
     kind: 'checklist',
     eyebrow: 'Signup, Earn, Redeem',
-    title: 'Sign a guest up correctly',
+    title: 'Enrollment steps',
     summary:
-      'Collect the key details accurately so the account can be found later and marketing consent is handled properly.',
+      'Use the same workflow every time so signup stays fast and consistent.',
     checklist: [
-      'Open the customer menu',
-      'Select add customer',
-      'Enter first name and last name',
-      'Enter phone number as the primary identifier',
-      'Confirm marketing consent',
-      'Save the profile and continue the sale',
+      'Invite guest to join',
+      'Open customer menu on left hand menu',
+      'Click customer button',
+      'Enter first and last name plus phone',
+      'Confirm enrollment',
+      'Mention welcome text will be sent',
+      'Thank them',
     ],
     mediaPlaceholders: [
       {
-        title: 'POS signup screenshots',
-        body: 'Add step-by-step signup images here once the screenshots are ready.',
+        title: 'Enrollment screenshots',
+        body: 'Add the customer-menu, customer-button, and enrollment screenshots here.',
       },
     ],
     coachNote:
-      'First and last name matter. Phone number is still the best lookup field for future visits.',
+      'This matches the one-page guide. First name, last name, and phone number are required.',
   },
   {
-    id: 'pos-earn-redeem',
-    module: 'pos',
-    kind: 'brief',
-    eyebrow: 'Signup, Earn, Redeem',
-    title: 'Explain earn and redeem simply',
-    summary:
-      'Guests earn points today and can use them on a future visit. They do not earn and redeem on the same transaction.',
-    highlights: [
-      { label: 'Earn', value: 'Today’s purchase', note: 'Points post after the transaction' },
-      { label: 'Redeem', value: 'Next visit', note: 'Available after points activate' },
-      { label: 'Lookup', value: 'Phone number', note: 'Fastest way to find the account' },
-    ],
-    mediaPlaceholders: [
-      {
-        title: 'POS earn / redeem screenshots',
-        body: 'Add the account lookup and redemption workflow screenshots here.',
-      },
-    ],
-  },
-  {
-    id: 'pos-no-response',
+    id: 'pos-busy-check',
     module: 'pos',
     kind: 'scenario',
     eyebrow: 'Signup, Earn, Redeem',
-    title: 'Handle “no” cleanly',
+    title: 'When it\'s busy',
     summary:
-      'A clean exit matters just as much as the invitation.',
-    prompt: 'The guest says, “No thanks.” What should you say next?',
-    options: [
-      {
-        text: "That's okay. If you decide to later, there's a QR code you can use.",
-        correct: true,
-        feedback:
-          'Correct. That keeps the interaction smooth and protects the guest experience.',
-      },
-      {
-        text: 'Explain the tiers and bonus points in more detail.',
-        correct: false,
-        feedback:
-          'Not correct. The standard is no pressure and no second attempt.',
-      },
-      {
-        text: 'Ask again after payment to make sure they understood.',
-        correct: false,
-        feedback:
-          'Not correct. A second attempt creates pressure and slows the transaction.',
-      },
-    ],
-    coachNote: 'No pressure. No awkward pause. Move on cleanly.',
-  },
-  {
-    id: 'pos-busy-line',
-    module: 'pos',
-    kind: 'scenario',
-    eyebrow: 'Signup, Earn, Redeem',
-    title: 'Protect line speed',
-    summary:
-      'Use the short version when the line is building and there is no backup available.',
+      'Use the short version when there is a line and no backup available.',
     script:
-      'For the first two weeks only, new members get 5,000 bonus points. You can scan this QR code to join now, or next time you are in the store.',
-    prompt:
-      'There are four people in line and no backup. What is the right move?',
+      'We just launched our new loyalty program. You get 5,000 bonus points when you sign up before April 30. Here is a QR code if you\'d like to join.',
+    prompt: 'There are four people in line and no backup. What is the right move?',
     options: [
       {
         text: 'Use the short busy-line script and keep the transaction moving.',
         correct: true,
-        feedback:
-          'Correct. Service speed and a short invitation can coexist.',
+        feedback: 'Correct. That matches the guide and protects line speed.',
       },
       {
-        text: 'Stop mentioning loyalty until the rush is over.',
+        text: 'Skip the invitation completely until the line is gone.',
         correct: false,
-        feedback:
-          'Not correct. The behavior is still to invite, just with a shorter version.',
+        feedback: 'Not correct. The guide still calls for a short invitation when it is busy.',
       },
       {
-        text: 'Give the full script and full explanation to every guest.',
+        text: 'Give the full invitation and full explanation to every guest.',
         correct: false,
-        feedback:
-          'Not correct. The line-speed constraint changes how much you say.',
+        feedback: 'Not correct. Use the shorter version when speed matters.',
       },
     ],
+    coachNote: 'The standard is still to invite. The only change is the shorter script.',
   },
   {
     id: 'account-intro',
     module: 'account',
     kind: 'brief',
     eyebrow: 'Account Management',
-    title: 'Support the guest after signup',
+    title: 'Account access',
     summary:
-      'This module covers where guests manage their account and how staff should talk about digital access.',
-    bullets: [
-      'Web wallet',
-      'Wallet pass',
-      'Native app',
-    ],
+      'After signup, guests may ask where they can view their points or rewards. Keep the answer practical and simple.',
+    bullets: ['Receipt balance', 'Web wallet', 'Wallet pass', 'Native app'],
   },
   {
     id: 'account-web-wallet',
     module: 'account',
     kind: 'brief',
     eyebrow: 'Account Management',
-    title: 'Web wallet basics',
+    title: 'Web wallet',
     summary:
-      'Guests should be able to view their points, rewards, and account details through the loyalty web experience.',
+      'Use the web wallet as the simplest account-access option for guests who do not want the app.',
     bullets: [
-      'Use it to check rewards and account details',
-      'Use it as the simplest fallback if the guest does not use the app',
-      'Keep staff language focused on access, not troubleshooting details',
+      'Use it to view points, rewards, and account details',
+      'Position it as the easiest fallback option',
+      'Keep staff language focused on access, not troubleshooting',
     ],
     mediaPlaceholders: [
       {
         title: 'Web wallet screenshots',
-        body: 'Add screenshots for points balance, rewards view, and profile access.',
+        body: 'Add screenshots for points balance, rewards, and profile access here.',
       },
     ],
   },
@@ -465,18 +425,18 @@ export const TEAM_STEPS: Step[] = [
     module: 'account',
     kind: 'brief',
     eyebrow: 'Account Management',
-    title: 'Wallet pass setup',
+    title: 'Wallet pass',
     summary:
-      'Show guests how to keep their rewards access handy through a wallet pass when that option is available.',
+      'Use wallet pass as the simple grab-and-go option when guests want quick access on their phone.',
     bullets: [
-      'Use wallet pass as a convenience tool',
       'Position it as the easy-access option',
-      'Know where to point guests if they need help adding it',
+      'Use it for quick lookup at checkout',
+      'Point guests to setup help only when needed',
     ],
     mediaPlaceholders: [
       {
         title: 'Wallet pass screenshots',
-        body: 'Add Apple Wallet / Google Wallet setup visuals here.',
+        body: 'Add Apple Wallet and Google Wallet setup visuals here.',
       },
     ],
   },
@@ -485,12 +445,12 @@ export const TEAM_STEPS: Step[] = [
     module: 'account',
     kind: 'brief',
     eyebrow: 'Account Management',
-    title: 'Native app basics',
+    title: 'Native app',
     summary:
-      'If guests prefer the app, staff should know the simple role it plays in account access and rewards management.',
+      'If the guest prefers the app, keep the explanation focused on checking rewards and account access.',
     bullets: [
-      'Use the app for account access and rewards visibility',
-      'Keep explanations simple and action-oriented',
+      'Use the app for rewards visibility and account access',
+      'Keep the explanation short and action-oriented',
       'Escalate technical questions to the store manager when needed',
     ],
     mediaPlaceholders: [
@@ -506,28 +466,24 @@ export const TEAM_STEPS: Step[] = [
     kind: 'scenario',
     eyebrow: 'Account Management',
     title: 'Guide the guest to their account',
-    summary:
-      'Guests may need help understanding where their points and rewards live after signup.',
+    summary: 'Give the fastest accurate answer when a guest asks where to check later.',
     prompt:
       'A guest asks where they can check their points later. What should the team member say?',
     options: [
       {
         text: 'Your points balance appears on your receipt and can also be viewed through your loyalty account.',
         correct: true,
-        feedback:
-          'Correct. That keeps the answer practical and aligned to the training materials.',
+        feedback: 'Correct. That keeps the answer practical and aligned to the training.',
       },
       {
-        text: 'You need to wait for the manager to print a points report for you.',
+        text: 'You need to wait for a manager to print a points report for you.',
         correct: false,
-        feedback:
-          'Not correct. Guests should be directed to their own loyalty account access.',
+        feedback: 'Not correct. Guests should be directed to their own account access.',
       },
       {
         text: 'There is no way to check points until you redeem them.',
         correct: false,
-        feedback:
-          'Not correct. Guests can view their balance through the loyalty account experience.',
+        feedback: 'Not correct. Guests can view their balance after signup.',
       },
     ],
   },
@@ -538,12 +494,12 @@ export const TEAM_STEPS: Step[] = [
     eyebrow: 'Complete Training',
     title: 'Submit your completion',
     summary:
-      'Finish the training so your store can track who is ready for launch. Your score is based on first-attempt answers in the scenario checks.',
+      'Finish the training so your store can track who is ready. Your score is based on first-attempt knowledge checks.',
     checklist: [
-      'I understand loyalty basics',
-      'I can handle signup, earn, and redeem conversations in the POS',
-      'I know where guests can manage their account',
-      'I am ready to use the knowledge base or ask my store manager when unsure',
+      'I can use the invitation confidently',
+      'I can handle yes, no, and busy-line situations',
+      'I know the enrollment steps and reward basics',
+      'I know where guests can check points and rewards later',
     ],
   },
 ];
@@ -555,7 +511,7 @@ export const MANAGER_STEPS: Step[] = [
     eyebrow: 'Manager Tools',
     title: 'Coach the behavior',
     summary:
-      'Managers should reinforce the invitation, the yes/no response, and line-speed discipline.',
+      'Managers should reinforce the invitation, the yes or no response, and line-speed discipline.',
     bullets: [
       'Watch whether staff ask',
       'Watch how they ask',
