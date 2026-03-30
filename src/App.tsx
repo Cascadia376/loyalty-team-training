@@ -483,12 +483,13 @@ function PathExperience({
       : currentStep.kind === 'checklist' || currentStep.kind === 'signoff'
         ? allChecklistItemsChecked
         : true;
-  const progress = ((stepIndex + 1) / path.steps.length) * 100;
-  const isLastStep = stepIndex === path.steps.length - 1;
-  const moduleKey = currentStep.module;
-  const currentModule = moduleKey ? MODULE_CONFIG[moduleKey] : null;
-  const currentModuleSteps = moduleKey ? moduleSteps(moduleKey) : [];
-  const currentModuleIndex = moduleKey ? currentModuleSteps.findIndex((step) => step.id === currentStep.id) : -1;
+    const progress = ((stepIndex + 1) / path.steps.length) * 100;
+    const isLastStep = stepIndex === path.steps.length - 1;
+    const moduleKey = currentStep.module;
+    const currentModule = moduleKey ? MODULE_CONFIG[moduleKey] : null;
+    const currentModuleSteps = moduleKey ? moduleSteps(moduleKey) : [];
+    const currentModuleIndex = moduleKey ? currentModuleSteps.findIndex((step) => step.id === currentStep.id) : -1;
+    const isModuleStart = currentModuleIndex === 0;
 
   return (
     <>
@@ -528,10 +529,22 @@ function PathExperience({
           </>
         )}
         <AnimatePresence mode="wait">
-          <motion.section key={currentStep.id} className="module-card" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -18 }} transition={{ duration: 0.22, ease: 'easeOut' }}>
+          <motion.section key={currentStep.id} className={`module-card ${isModuleStart ? 'module-card-module-start' : ''}`} initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -18 }} transition={{ duration: 0.22, ease: 'easeOut' }}>
             {currentModule && (
               <div className="module-heading-top">
                 <span className="mini-badge">{currentModuleIndex + 1} / {currentModuleSteps.length} in module</span>
+              </div>
+            )}
+            {currentModule && isModuleStart && (
+              <div className="module-start-banner">
+                <div className="module-start-icon">
+                  <currentModule.icon size={18} />
+                </div>
+                <div>
+                  <p className="module-start-kicker">New module</p>
+                  <p className="module-start-title">{currentModule.label}</p>
+                  <p className="module-start-copy">{currentModule.description}</p>
+                </div>
               </div>
             )}
             <div className="module-heading">
@@ -541,7 +554,7 @@ function PathExperience({
             </div>
             {currentStep.highlights && <div className="highlight-grid">{currentStep.highlights.map((item) => <div key={item.label} className="highlight-card"><p className="highlight-label">{item.label}</p><p className="highlight-value">{item.value}</p>{item.note && <p className="highlight-note">{item.note}</p>}</div>)}</div>}
             {currentStep.script && <div className="script-card"><MessageSquareQuote size={18} className="script-icon" /><p>{currentStep.script}</p></div>}
-            {currentStep.bullets && <ul className="bullet-list bullet-list-card">{currentStep.bullets.map((item) => <li key={item}>{item}</li>)}</ul>}
+              {currentStep.bullets && <ul className="bullet-list bullet-list-card">{currentStep.bullets.map((item) => <li key={item}>{item === 'Bonus ends soon - April 30' ? <strong>{item}</strong> : item}</li>)}</ul>}
             {currentStep.mediaPlaceholders && <div className="media-placeholder-grid">{currentStep.mediaPlaceholders.map((item) => <div key={item.title} className="media-placeholder-card"><div className="media-placeholder-icon"><ImagePlus size={18} /></div><p className="media-placeholder-title">{item.title}</p><p className="media-placeholder-copy">{item.body}</p></div>)}</div>}
             {currentStep.kind === 'scenario' && currentStep.prompt && currentStep.options && <ScenarioCard step={currentStep} selectedAnswer={selectedAnswer} selectedOption={selectedOption} onScenarioAnswer={onScenarioAnswer} />}
             {currentStep.checklist && <ChecklistCard stepId={currentStep.id} items={currentStep.checklist} checkedItems={checkedItems} onToggleChecklist={onToggleChecklist} />}

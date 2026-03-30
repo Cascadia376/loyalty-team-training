@@ -92,6 +92,10 @@
   @apply px-4 py-4 shadow-sm;
 }
 
+.module-card-module-start {
+  @apply border-brand-red/20 bg-gradient-to-b from-brand-red/5 to-white;
+}
+
 .hero-card {
   @apply overflow-hidden;
 }
@@ -271,6 +275,26 @@
 
 .module-heading-top {
   @apply mb-3 flex items-center justify-between gap-3;
+}
+
+.module-start-banner {
+  @apply mb-4 flex items-start gap-3 rounded-[22px] border border-brand-red/15 bg-white/90 px-4 py-4;
+}
+
+.module-start-icon {
+  @apply inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-brand-red text-white shadow-sm;
+}
+
+.module-start-kicker {
+  @apply text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-red;
+}
+
+.module-start-title {
+  @apply mt-1 font-display text-2xl font-semibold text-brand-brown;
+}
+
+.module-start-copy {
+  @apply mt-1 text-sm leading-6 text-brand-dark/72;
 }
 
 .manager-return {

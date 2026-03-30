@@ -257,27 +257,11 @@ export const TEAM_STEPS: Step[] = [
     ],
   },
   {
-    id: 'basics-quick-tips',
-    module: 'basics',
-    kind: 'brief',
-    eyebrow: 'Loyalty Basics',
-    title: 'Quick tips',
-    summary:
-      'A few habits make the launch easier: stay conversational, wait for the answer, and use the short version when needed.',
-    bullets: [
-      'Keep it natural - conversational, not salesy',
-      'Wait for the answer - do not rush past the pause',
-      'Bonus ends soon - April 30',
-    ],
-    script:
-      'We just launched our new loyalty program. You get 5,000 bonus points when you sign up before April 30. Here is a QR code if you\'d like to join.',
-  },
-  {
     id: 'basics-response-check',
     module: 'basics',
     kind: 'scenario',
     eyebrow: 'Loyalty Basics',
-    title: 'Use the clean exit',
+    title: 'If the guest says no',
     summary:
       'When the guest says no, keep the interaction positive and keep the line moving.',
     prompt: 'The guest says, "No thanks." What should you say next?',
@@ -296,6 +280,59 @@ export const TEAM_STEPS: Step[] = [
         text: 'Are you sure? It only takes a second.',
         correct: false,
         feedback: 'Not correct. The standard is no pressure and a clean exit.',
+      },
+    ],
+  },
+  {
+    id: 'basics-when-busy',
+    module: 'basics',
+    kind: 'brief',
+    eyebrow: 'Loyalty Basics',
+    title: 'When it\'s busy',
+    summary:
+      'Use the short version when there is a line and you need to keep the transaction moving.',
+    script:
+      'We just launched our new loyalty program. You get 5,000 bonus points when you sign up before April 30. Here is a QR code if you\'d like to join.',
+  },
+  {
+    id: 'basics-quick-tips',
+    module: 'basics',
+    kind: 'brief',
+    eyebrow: 'Loyalty Basics',
+    title: 'Quick tips',
+    summary:
+      'A few habits make the launch easier: stay conversational, wait for the answer, and keep the message simple.',
+    bullets: [
+      'Keep it natural and conversational.',
+      'Wait for the answer. Give guests time to think.',
+      'Bonus ends soon - April 30',
+    ],
+  },
+  {
+    id: 'basics-module-quiz',
+    module: 'basics',
+    kind: 'scenario',
+    eyebrow: 'Loyalty Basics',
+    title: 'Module quiz',
+    summary:
+      'Finish the module with the short response that fits a busy moment at the till.',
+    prompt:
+      'The line is building and you need the short version. Which script is right?',
+    options: [
+      {
+        text: 'We just launched our new loyalty program. You get 5,000 bonus points when you sign up before April 30. Here is a QR code if you\'d like to join.',
+        correct: true,
+        feedback: 'Correct. That is the guide-based busy-line version.',
+      },
+      {
+        text: 'Let me walk you through the tiers first so you can decide.',
+        correct: false,
+        feedback: 'Not correct. That is too long for a busy checkout moment.',
+      },
+      {
+        text: 'Skip loyalty entirely whenever there is a line.',
+        correct: false,
+        feedback: 'Not correct. The standard is still to invite, just with the short version.',
       },
     ],
   },
@@ -365,9 +402,9 @@ export const TEAM_STEPS: Step[] = [
     module: 'pos',
     kind: 'scenario',
     eyebrow: 'Signup, Earn, Redeem',
-    title: 'When it\'s busy',
+    title: 'Module quiz',
     summary:
-      'Use the short version when there is a line and no backup available.',
+      'Close the module by choosing the right move for a busy checkout moment.',
     script:
       'We just launched our new loyalty program. You get 5,000 bonus points when you sign up before April 30. Here is a QR code if you\'d like to join.',
     prompt: 'There are four people in line and no backup. What is the right move?',
@@ -465,7 +502,7 @@ export const TEAM_STEPS: Step[] = [
     module: 'account',
     kind: 'scenario',
     eyebrow: 'Account Management',
-    title: 'Guide the guest to their account',
+    title: 'Module quiz',
     summary: 'Give the fastest accurate answer when a guest asks where to check later.',
     prompt:
       'A guest asks where they can check their points later. What should the team member say?',
