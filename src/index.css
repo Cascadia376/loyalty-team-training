@@ -96,6 +96,78 @@
   @apply border-brand-red/20 bg-gradient-to-b from-brand-red/5 to-white;
 }
 
+.module-card-quiz {
+  @apply border-brand-red/45 bg-brand-red/5 shadow-[0_0_0_1px_rgba(215,35,35,0.15)];
+}
+
+.module-theme-basics {
+  --module-accent: #d72323;
+  --module-accent-soft: rgba(215, 35, 35, 0.08);
+  --module-accent-border: rgba(215, 35, 35, 0.2);
+}
+
+.module-theme-pos {
+  --module-accent: #6b3f22;
+  --module-accent-soft: rgba(107, 63, 34, 0.08);
+  --module-accent-border: rgba(107, 63, 34, 0.2);
+}
+
+.module-theme-account {
+  --module-accent: #2f7c86;
+  --module-accent-soft: rgba(47, 124, 134, 0.08);
+  --module-accent-border: rgba(47, 124, 134, 0.2);
+}
+
+.module-theme-basics .module-start-banner,
+.module-theme-pos .module-start-banner,
+.module-theme-account .module-start-banner {
+  border-color: var(--module-accent-border);
+  background: linear-gradient(180deg, var(--module-accent-soft), rgba(255, 255, 255, 0.96));
+}
+
+.module-theme-basics .module-start-icon,
+.module-theme-pos .module-start-icon,
+.module-theme-account .module-start-icon {
+  background: var(--module-accent);
+}
+
+.module-theme-basics .module-start-kicker,
+.module-theme-pos .module-start-kicker,
+.module-theme-account .module-start-kicker,
+.module-theme-basics .module-title-quiz,
+.module-theme-pos .module-title-quiz,
+.module-theme-account .module-title-quiz {
+  color: var(--module-accent);
+}
+
+.module-theme-basics .module-title-quiz,
+.module-theme-pos .module-title-quiz,
+.module-theme-account .module-title-quiz {
+  letter-spacing: 0.22em;
+}
+
+.module-theme-basics .prompt-card,
+.module-theme-pos .prompt-card,
+.module-theme-account .prompt-card {
+  background: color-mix(in srgb, var(--module-accent) 8%, white);
+  border-color: color-mix(in srgb, var(--module-accent) 24%, #6b4e3d);
+}
+
+.module-theme-basics .script-card,
+.module-theme-pos .script-card,
+.module-theme-account .script-card {
+  border-color: color-mix(in srgb, var(--module-accent) 20%, transparent);
+  background: color-mix(in srgb, var(--module-accent) 5%, white);
+}
+
+.module-theme-basics .mini-badge,
+.module-theme-pos .mini-badge,
+.module-theme-account .mini-badge {
+  color: var(--module-accent);
+  border-color: var(--module-accent-border);
+  background: color-mix(in srgb, var(--module-accent) 7%, white);
+}
+
 .hero-card {
   @apply overflow-hidden;
 }
@@ -107,6 +179,10 @@
 .hero-title,
 .module-title {
   @apply font-display text-[2rem] font-semibold leading-[0.95] tracking-tight text-brand-brown;
+}
+
+.module-title-quiz {
+  @apply text-brand-red uppercase;
 }
 
 .hero-copy,
@@ -195,6 +271,10 @@
   @apply rounded-[22px] border border-brand-brown/10 bg-white px-4 py-4;
 }
 
+.media-placeholder-card-image {
+  @apply bg-brand-alt/40;
+}
+
 .onboarding-card {
   @apply text-left;
 }
@@ -239,6 +319,14 @@
 .module-preview-icon,
 .media-placeholder-icon {
   @apply inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-alt text-brand-red;
+}
+
+.media-screenshot-frame {
+  @apply mt-3 overflow-hidden rounded-[18px] border border-brand-brown/10 bg-white shadow-sm;
+}
+
+.media-screenshot {
+  @apply block h-auto w-full;
 }
 
 .module-preview-title,
@@ -342,11 +430,11 @@
 }
 
 .prompt-card {
-  @apply px-4 py-4;
+  @apply border-brand-brown/20 bg-brand-brown/8 px-4 py-4;
 }
 
 .prompt-text {
-  @apply mt-2 text-base leading-7 text-brand-dark/82;
+  @apply mt-2 text-base leading-7 text-brand-dark/92;
 }
 
 .option-stack,

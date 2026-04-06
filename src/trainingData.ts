@@ -19,6 +19,8 @@ export interface Highlight {
 export interface MediaPlaceholder {
   title: string;
   body: string;
+  imageSrc?: string;
+  imageAlt?: string;
 }
 
 export interface Step {
@@ -78,6 +80,7 @@ export const MODULE_CONFIG: Record<
     shortLabel: string;
     description: string;
     icon: LucideIcon;
+    themeClass: string;
   }
 > = {
   basics: {
@@ -85,18 +88,21 @@ export const MODULE_CONFIG: Record<
     shortLabel: 'Basics',
     description: 'Invitation, responses, and quick tips.',
     icon: Wallet,
+    themeClass: 'module-theme-basics',
   },
   pos: {
     label: 'Signup, Earn, Redeem',
     shortLabel: 'POS',
     description: 'Points, tiers, redemption, and enrollment steps.',
     icon: Store,
+    themeClass: 'module-theme-pos',
   },
   account: {
     label: 'Account Management',
     shortLabel: 'Account',
     description: 'Where guests can view points and rewards after signup.',
     icon: Smartphone,
+    themeClass: 'module-theme-account',
   },
 };
 
@@ -446,8 +452,16 @@ export const TEAM_STEPS: Step[] = [
     ],
     mediaPlaceholders: [
       {
-        title: 'Enrollment screenshots',
-        body: 'Add the customer-menu, customer-button, and enrollment screenshots here.',
+        title: 'Add customer to cart',
+        body: 'Use this when showing how to find and add a customer from the cart screen.',
+        imageSrc: '/pos/2026-03-26-13-01-03-pos-main.png',
+        imageAlt: 'Add Customer to Cart dialog',
+      },
+      {
+        title: 'Open customer menu',
+        body: 'Use this when pointing out where the customer tools live on the main POS screen.',
+        imageSrc: '/pos/2026-03-26-13-04-35-pos-main.png',
+        imageAlt: 'POS main screen with customer tools',
       },
     ],
     coachNote:
@@ -569,8 +583,10 @@ export const TEAM_STEPS: Step[] = [
     ],
     mediaPlaceholders: [
       {
-        title: 'App screenshots',
-        body: 'Add app home, rewards, and account screenshots here.',
+        title: 'Add customer details',
+        body: 'Use this for the form fields staff need to complete during signup.',
+        imageSrc: '/pos/2026-03-26-13-02-55-pos-main.png',
+        imageAlt: 'Add customer details form',
       },
     ],
   },
@@ -589,8 +605,10 @@ export const TEAM_STEPS: Step[] = [
     ],
     mediaPlaceholders: [
       {
-        title: 'Wallet pass screenshots',
-        body: 'Add Apple Wallet and Google Wallet setup visuals here.',
+        title: 'Tender and payment',
+        body: 'Use this to show where loyalty points or other tender options appear in the checkout flow.',
+        imageSrc: '/pos/2026-03-26-13-05-07-pos-main.png',
+        imageAlt: 'Checkout payment method selection screen',
       },
     ],
   },
@@ -609,8 +627,10 @@ export const TEAM_STEPS: Step[] = [
     ],
     mediaPlaceholders: [
       {
-        title: 'Web wallet screenshots',
-        body: 'Add screenshots for points balance, rewards, and profile access here.',
+        title: 'Product and SKU',
+        body: 'Use this when showing the main POS item list and item lookup layout.',
+        imageSrc: '/pos/2026-03-26-13-04-35-pos-main.png',
+        imageAlt: 'POS product search and item list screen',
       },
     ],
   },

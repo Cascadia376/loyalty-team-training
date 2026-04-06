@@ -133,7 +133,9 @@ export default function App() {
 
   const normalizedStore =
     trainee.store === 'Other store' ? trainee.otherStore.trim() : trainee.store;
-  const canStartTraining = trainee.name.trim().length > 1 && normalizedStore.length > 0;
+  const nameParts = trainee.name.trim().split(/\s+/).filter(Boolean);
+  const hasFullName = nameParts.length >= 2;
+  const canStartTraining = hasFullName && normalizedStore.length > 0;
   const firstTryCorrectCount = scenarioSteps.filter(
     (step) => firstAttemptResults[step.id],
   ).length;
@@ -370,15 +372,16 @@ function HomeScreen({
           </div>
         <div className="hero-actions">
           <div className="onboarding-card">
-            <p className="prompt-label">Before training starts</p>
-            <div className="form-stack">
-              <label className="field-label">
-                <span>Name</span>
-                <div className="field-input-wrap">
-                  <UserRound size={16} />
-                  <input className="field-input" value={trainee.name} onChange={(e) => onTraineeChange({ ...trainee, name: e.target.value })} placeholder="Enter your name" />
-                </div>
-              </label>
+                <p className="prompt-label">Before training starts</p>
+                <p className="form-hint">Enter first and last name to begin.</p>
+                <div className="form-stack">
+                  <label className="field-label">
+                    <span>First and last name</span>
+                    <div className="field-input-wrap">
+                      <UserRound size={16} />
+                      <input className="field-input" value={trainee.name} onChange={(e) => onTraineeChange({ ...trainee, name: e.target.value })} placeholder="Enter first and last name" />
+                    </div>
+                  </label>
               <label className="field-label">
                 <span>Store</span>
                 <div className="field-input-wrap field-select-wrap">
@@ -529,7 +532,7 @@ function PathExperience({
           </>
         )}
         <AnimatePresence mode="wait">
-          <motion.section key={currentStep.id} className={`module-card ${isModuleStart ? 'module-card-module-start' : ''}`} initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -18 }} transition={{ duration: 0.22, ease: 'easeOut' }}>
+          <motion.section key={currentStep.id} className={`module-card ${moduleKey ? MODULE_CONFIG[moduleKey].themeClass : ''} ${isModuleStart ? 'module-card-module-start' : ''} ${currentStep.title === 'Module quiz' ? 'module-card-quiz' : ''}`} initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -18 }} transition={{ duration: 0.22, ease: 'easeOut' }}>
             {currentModule && (
               <div className="module-heading-top">
                 <span className="mini-badge">{currentModuleIndex + 1} / {currentModuleSteps.length} in module</span>
@@ -549,16 +552,16 @@ function PathExperience({
             )}
             <div className="module-heading">
               <p className="eyebrow">{currentStep.eyebrow}</p>
-              <h2 className="module-title">{currentStep.title}</h2>
+              <h2 className={`module-title ${currentStep.title === 'Module quiz' ? 'module-title-quiz' : ''}`}>{currentStep.title}</h2>
               <p className="module-summary">{currentStep.summary}</p>
             </div>
             {currentStep.highlights && <div className="highlight-grid">{currentStep.highlights.map((item) => <div key={item.label} className="highlight-card"><p className="highlight-label">{item.label}</p><p className="highlight-value">{item.value}</p>{item.note && <p className="highlight-note">{item.note}</p>}</div>)}</div>}
             {currentStep.script && <div className="script-card"><MessageSquareQuote size={18} className="script-icon" /><p>{currentStep.script}</p></div>}
               {currentStep.bullets && <ul className="bullet-list bullet-list-card">{currentStep.bullets.map((item) => <li key={item}>{item === 'Bonus ends soon - April 30' ? <strong>{item}</strong> : item}</li>)}</ul>}
-            {currentStep.mediaPlaceholders && <div className="media-placeholder-grid">{currentStep.mediaPlaceholders.map((item) => <div key={item.title} className="media-placeholder-card"><div className="media-placeholder-icon"><ImagePlus size={18} /></div><p className="media-placeholder-title">{item.title}</p><p className="media-placeholder-copy">{item.body}</p></div>)}</div>}
+            {currentStep.mediaPlaceholders && <div className="media-placeholder-grid">{currentStep.mediaPlaceholders.map((item) => <div key={item.title} className={`media-placeholder-card ${item.imageSrc ? 'media-placeholder-card-image' : ''}`}><div className="media-placeholder-icon"><ImagePlus size={18} /></div><p className="media-placeholder-title">{item.title}</p>{item.imageSrc ? <div className="media-screenshot-frame"><img src={item.imageSrc} alt={item.imageAlt ?? item.title} className="media-screenshot" loading="lazy" /></div> : null}<p className="media-placeholder-copy">{item.body}</p></div>)}</div>}
             {currentStep.kind === 'scenario' && currentStep.prompt && currentStep.options && <ScenarioCard step={currentStep} selectedAnswer={selectedAnswer} selectedOption={selectedOption} onScenarioAnswer={onScenarioAnswer} />}
             {currentStep.checklist && <ChecklistCard stepId={currentStep.id} items={currentStep.checklist} checkedItems={checkedItems} onToggleChecklist={onToggleChecklist} />}
-            {currentStep.coachNote && <div className="coach-note"><ShieldCheck size={18} /><div><p className="coach-note-title">Coaching note</p><p>{currentStep.coachNote}</p></div></div>}
+            {currentStep.coachNote && <div className="coach-note"><ShieldCheck size={18} /><div><p className="coach-note-title">NOTE</p><p>{currentStep.coachNote}</p></div></div>}
             {path.key === 'team' && currentStep.kind === 'signoff' && (
               <div className="support-card">
                 <p className="coach-note-title">Tracking and support</p>
@@ -594,7 +597,7 @@ function ScenarioCard({
 
   return (
     <div className="scenario-block">
-      <div className="prompt-card"><p className="prompt-label">Scenario</p><p className="prompt-text">{step.prompt}</p></div>
+      <div className="prompt-card"><p className="prompt-label">Quiz question</p><p className="prompt-text">{step.prompt}</p></div>
       <div className="option-stack">
         {step.options?.map((option, index) => {
           const isSelected = selectedAnswer === index;
