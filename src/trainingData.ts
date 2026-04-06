@@ -434,6 +434,48 @@ export const TEAM_STEPS: Step[] = [
     ],
   },
   {
+    id: 'pos-enrollment-lookup',
+    module: 'pos',
+    kind: 'brief',
+    eyebrow: 'Signup, Earn, Redeem',
+    title: 'Add customer to cart',
+    summary:
+      'Start enrollment by finding the customer from the cart screen.',
+    mediaPlaceholders: [
+      {
+        title: 'Add customer to cart',
+        body: 'Use this when showing how to find and add a customer from the cart screen.',
+        imageSrc: '/pos/2026-03-26-13-01-03-pos-main.png',
+        imageAlt: 'Add Customer to Cart dialog',
+      },
+      {
+        title: 'Open customer menu',
+        body: 'Use this when pointing out where the customer tools live on the main POS screen.',
+        imageSrc: '/pos/2026-03-26-13-04-35-pos-main.png',
+        imageAlt: 'POS main screen with customer tools',
+      },
+    ],
+  },
+  {
+    id: 'pos-enrollment-details',
+    module: 'pos',
+    kind: 'brief',
+    eyebrow: 'Signup, Earn, Redeem',
+    title: 'Add customer details',
+    summary:
+      'Use the customer details form to collect the required signup information.',
+    mediaPlaceholders: [
+      {
+        title: 'Add customer details',
+        body: 'Use this for the form fields staff need to complete during signup.',
+        imageSrc: '/pos/2026-03-26-13-02-55-pos-main.png',
+        imageAlt: 'Add customer details form',
+      },
+    ],
+    coachNote:
+      'First name, last name, and phone number are required.',
+  },
+  {
     id: 'pos-enrollment',
     module: 'pos',
     kind: 'checklist',
@@ -449,20 +491,6 @@ export const TEAM_STEPS: Step[] = [
       'Confirm enrollment',
       'Mention welcome text will be sent',
       'Thank them',
-    ],
-    mediaPlaceholders: [
-      {
-        title: 'Add customer to cart',
-        body: 'Use this when showing how to find and add a customer from the cart screen.',
-        imageSrc: '/pos/2026-03-26-13-01-03-pos-main.png',
-        imageAlt: 'Add Customer to Cart dialog',
-      },
-      {
-        title: 'Open customer menu',
-        body: 'Use this when pointing out where the customer tools live on the main POS screen.',
-        imageSrc: '/pos/2026-03-26-13-04-35-pos-main.png',
-        imageAlt: 'POS main screen with customer tools',
-      },
     ],
     coachNote:
       'This matches the one-page guide. First name, last name, and phone number are required.',
