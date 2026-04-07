@@ -16,13 +16,6 @@ export interface Highlight {
   note?: string;
 }
 
-export interface MediaPlaceholder {
-  title: string;
-  body: string;
-  imageSrc?: string;
-  imageAlt?: string;
-}
-
 export interface Step {
   id: string;
   module?: ModuleKey;
@@ -32,12 +25,22 @@ export interface Step {
   summary: string;
   script?: string;
   bullets?: string[];
+  timedBullets?: {
+    showUntil: string;
+    text: string;
+  }[];
   highlights?: Highlight[];
+  progressiveReveal?: boolean;
   checklist?: string[];
   prompt?: string;
   options?: ScenarioOption[];
   coachNote?: string;
-  mediaPlaceholders?: MediaPlaceholder[];
+  // Internal rule: keep screenshots only when they stay legible at the app's narrow width and clearly help the learner; otherwise prefer text-only or tightly cropped/annotated visuals.
+  screenshot?: {
+    alt: string;
+    caption: string;
+    src: string;
+  };
 }
 
 export interface PathDefinition {
@@ -56,6 +59,27 @@ export interface FaqSection {
   title: string;
   items: FaqItem[];
 }
+
+function isActiveThroughDate(showUntil: string, now = new Date()) {
+  const [year, month, day] = showUntil.split('-').map(Number);
+  const endOfDay = new Date(year, month - 1, day, 23, 59, 59, 999);
+  return now <= endOfDay;
+}
+
+const PROMO_END_DATE = '2026-04-30';
+const PROMO_START_LABEL = 'April 17';
+const PROMO_END_LABEL = 'April 30';
+const PROMO_BONUS_POINTS = '5,000 bonus points';
+
+const DEN_REWARDS_PROMO = isActiveThroughDate(PROMO_END_DATE)
+  ? {
+      showUntil: PROMO_END_DATE,
+      quickTip: 'Bonus ends soon - April 30',
+      signupBonusAnswer: `Yes. From ${PROMO_START_LABEL} to ${PROMO_END_LABEL}, new members get ${PROMO_BONUS_POINTS}.`,
+      standardInvite: `Have you signed up for our new loyalty program? From ${PROMO_START_LABEL} - ${PROMO_END_LABEL} only, new members get ${PROMO_BONUS_POINTS}. Can I set that up for you?`,
+      busyInvite: `We just launched our new loyalty program. You get ${PROMO_BONUS_POINTS} when you sign up before ${PROMO_END_LABEL}. Here is a QR code if you'd like to join.`,
+    }
+  : null;
 
 export const STORE_OPTIONS = [
   'Crown Isle',
@@ -135,7 +159,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
       {
         question: 'Is there a signup bonus?',
         guestAnswer:
-          'Yes. From April 17 to April 30, new members get 5,000 bonus points.',
+          DEN_REWARDS_PROMO?.signupBonusAnswer ?? 'No active signup bonus right now.',
       },
       {
         question: 'Do points expire?',
@@ -205,14 +229,12 @@ export const FAQ_SECTIONS: FaqSection[] = [
     items: [
       {
         question: 'What is the best checkout invitation?',
-        guestAnswer:
-          'Use the standard invitation: "Have you signed up for our new loyalty program? From April 17 - 30 only, new members get 5,000 bonus points. Can I set that up for you?"',
+        guestAnswer: `Use the standard invitation: "${DEN_REWARDS_PROMO?.standardInvite ?? 'Have you signed up for our new loyalty program? Can I set that up for you?'}"`,
         teamNote: 'Keep it natural and conversational, not salesy.',
       },
       {
         question: 'What should I say when the store is busy?',
-        guestAnswer:
-          'Use the short version: "We just launched our new loyalty program. You get 5,000 bonus points when you sign up before April 30. Here is a QR code if you\'d like to join."',
+        guestAnswer: `Use the short version: "${DEN_REWARDS_PROMO?.busyInvite ?? 'We just launched our new loyalty program. Here is a QR code if you\'d like to join.'}"`,
       },
       {
         question: 'What should I say if the guest says no?',
@@ -233,7 +255,8 @@ export const TEAM_STEPS: Step[] = [
     summary:
       'Lead with the standard invitation. Keep it calm, clear, and easy to say at the till.',
     script:
-      'Have you signed up for our new loyalty program? From April 17 - 30 only, new members get 5,000 bonus points. Can I set that up for you?',
+      DEN_REWARDS_PROMO?.standardInvite ??
+      'Have you signed up for our new loyalty program? Can I set that up for you?',
     coachNote: 'Pause and let the guest answer. Do not rush past the pause.',
   },
   {
@@ -244,6 +267,7 @@ export const TEAM_STEPS: Step[] = [
     title: 'Handling responses',
     summary:
       'The response matters as much as the ask. Move smoothly into the next step or out of the conversation.',
+    progressiveReveal: true,
     highlights: [
       {
         label: 'If yes',
@@ -273,20 +297,20 @@ export const TEAM_STEPS: Step[] = [
     prompt: 'A guest says, "No thanks," and reaches for their card. What should you do?',
     options: [
       {
-        text: 'That\'s okay! Here is a QR code if you\'d like to sign up later.',
-        correct: true,
-        feedback: 'Correct. That matches the guide and keeps the interaction smooth.',
-      },
-      {
         text: 'I can give you a quick overview of the program if you want to hear it.',
         correct: false,
         feedback: 'Not correct. You kept explaining after a no, which slows the line and feels pushy. Give the QR code and move on.',
       },
       {
+        text: 'That\'s okay! Here is a QR code if you\'d like to sign up later.',
+        correct: true,
+        feedback: 'Correct. That matches the guide and keeps the interaction smooth.',
+      },
+      {
         text: 'Are you sure? It only takes a second if you want to look at it.',
         correct: false,
         feedback: 'Not correct. That keeps pressure on after the guest declined. Stay brief, offer the QR code, and continue the transaction.',
-      },
+      }
     ],
   },
   {
@@ -298,7 +322,8 @@ export const TEAM_STEPS: Step[] = [
     summary:
       'Use the short version when there is a line and you need to keep the transaction moving.',
     script:
-      'We just launched our new loyalty program. You get 5,000 bonus points when you sign up before April 30. Here is a QR code if you\'d like to join.',
+      DEN_REWARDS_PROMO?.busyInvite ??
+      'We just launched our new loyalty program. Here is a QR code if you\'d like to join.',
   },
   {
     id: 'basics-quick-tips',
@@ -311,7 +336,11 @@ export const TEAM_STEPS: Step[] = [
     bullets: [
       'Keep it natural and conversational.',
       'Wait for the answer. Give guests time to think.',
-      'Bonus ends soon - April 30',
+    ],
+    timedBullets: [
+      ...(DEN_REWARDS_PROMO
+        ? [{ showUntil: DEN_REWARDS_PROMO.showUntil, text: DEN_REWARDS_PROMO.quickTip }]
+        : []),
     ],
   },
   {
@@ -326,11 +355,6 @@ export const TEAM_STEPS: Step[] = [
       'The line is building and the guest is already halfway through paying. What should you do?',
     options: [
       {
-        text: 'We just launched our new loyalty program. You get 5,000 bonus points when you sign up before April 30. Here is a QR code if you\'d like to join.',
-        correct: true,
-        feedback: 'Correct. That is the guide-based busy-line version.',
-      },
-      {
         text: 'I can give you the full version if you want the details first.',
         correct: false,
         feedback: 'Not correct. That is still too much detail for a busy line. Use the short invite and keep the transaction moving.',
@@ -340,6 +364,11 @@ export const TEAM_STEPS: Step[] = [
         correct: false,
         feedback: 'Not correct. That delays the invite and drops the opportunity. Use the short version now and keep it moving.',
       },
+      {
+        text: DEN_REWARDS_PROMO?.busyInvite ?? 'We just launched our new loyalty program. Here is a QR code if you\'d like to join.',
+        correct: true,
+        feedback: 'Correct. That is the guide-based busy-line version.',
+      }
     ],
   },
   {
@@ -382,20 +411,20 @@ export const TEAM_STEPS: Step[] = [
       'A guest looks distracted as you start the invite. What tone should you use?',
     options: [
       {
-        text: 'Keep it natural and conversational.',
-        correct: true,
-        feedback: 'Correct. That is the tone standard from the guide.',
-      },
-      {
         text: 'Add a little more enthusiasm so the guest feels the offer matters.',
         correct: false,
         feedback: 'Not correct. Extra enthusiasm can sound salesy and awkward. Keep the invite natural and easy to hear.',
       },
       {
+        text: 'Keep it natural and conversational.',
+        correct: true,
+        feedback: 'Correct. That is the tone standard from the guide.',
+      },
+      {
         text: 'Lead with the tiers and bonus details before you make the ask.',
         correct: false,
         feedback: 'Not correct. You led with details instead of the ask, which makes the pitch harder to follow. Start with the invitation first.',
-      },
+      }
     ],
   },
   {
@@ -440,21 +469,12 @@ export const TEAM_STEPS: Step[] = [
     eyebrow: 'Signup, Earn, Redeem',
     title: 'Add customer to cart',
     summary:
-      'Start enrollment by finding the customer from the cart screen.',
-    mediaPlaceholders: [
-      {
-        title: 'Add customer to cart',
-        body: 'Use this when showing how to find and add a customer from the cart screen.',
-        imageSrc: '/pos/2026-03-26-13-01-03-pos-main.png',
-        imageAlt: 'Add Customer to Cart dialog',
-      },
-      {
-        title: 'Open customer menu',
-        body: 'Use this when pointing out where the customer tools live on the main POS screen.',
-        imageSrc: '/pos/2026-03-26-13-04-35-pos-main.png',
-        imageAlt: 'POS main screen with customer tools',
-      },
-    ],
+      'Use the customer lookup first. If the guest may already be in the system, find them before creating a new profile.',
+    screenshot: {
+      src: '/pos/2026-03-26-13-01-03-pos-main-crop.png',
+      alt: 'Add Customer to Cart dialog with search field and customer results',
+      caption: 'Search by name, phone, or email to find the guest before checkout.',
+    },
   },
   {
     id: 'pos-enrollment-details',
@@ -463,17 +483,9 @@ export const TEAM_STEPS: Step[] = [
     eyebrow: 'Signup, Earn, Redeem',
     title: 'Add customer details',
     summary:
-      'Use the customer details form to collect the required signup information.',
-    mediaPlaceholders: [
-      {
-        title: 'Add customer details',
-        body: 'Use this for the form fields staff need to complete during signup.',
-        imageSrc: '/pos/2026-03-26-13-02-55-pos-main.png',
-        imageAlt: 'Add customer details form',
-      },
-    ],
+      'Update the guest details, turn loyalty on, and then confirm.',
     coachNote:
-      'First name, last name, and phone number are required.',
+      'Look up first. Update details if needed. Turn loyalty on before you confirm.',
   },
   {
     id: 'pos-enrollment',
@@ -482,20 +494,52 @@ export const TEAM_STEPS: Step[] = [
     eyebrow: 'Signup, Earn, Redeem',
     title: 'Enrollment steps',
     summary:
-      'Use the same workflow every time so signup stays fast and consistent.',
+      'Use the same sequence every time: look up first, update if needed, then enroll.',
     script:
       'I\'ll just get your first and last name and your phone number to get you set up. You\'ll get a message with a link to the Den Rewards app, and that\'s the easiest way to keep track of your points and transactions.',
     checklist: [
-      'Invite guest to join',
-      'Open customer menu on left hand menu',
-      'Click customer button',
-      'Enter first and last name plus phone',
+      'Look up the guest first',
+      'Update their details if needed',
+      'Turn loyalty on',
+      'Only create a new profile if you cannot find the guest',
+      'Ask for first name, last name, and phone number',
       'Confirm enrollment',
-      'Mention welcome text will be sent',
+      'Tell the guest they will get a message with the app link',
       'Thank them',
     ],
+  },
+  {
+    id: 'pos-existing-guest-check',
+    module: 'pos',
+    kind: 'scenario',
+    eyebrow: 'Signup, Earn, Redeem',
+    title: 'Module quiz',
+    summary:
+      'Check the enrollment flow when the guest may already exist in the system.',
+    prompt:
+      'A guest says they may already be in the system, but they were not enrolled through the pre-launch signup. What should you do first?',
+    options: [
+      {
+        text: 'Create a new profile right away so the signup is faster.',
+        correct: false,
+        feedback:
+          'Not correct. That can create a duplicate profile and make cleanup harder later. Look them up first.',
+      },
+      {
+        text: 'Ask the guest to come back later so you can check the account after the rush.',
+        correct: false,
+        feedback:
+          'Not correct. The lookup should happen now so the guest can be enrolled cleanly in the same transaction.',
+      },
+      {
+        text: 'Look them up first, update their information if needed, then turn loyalty on.',
+        correct: true,
+        feedback:
+          'Correct. That keeps the flow clean and avoids creating a duplicate profile when one may already exist.',
+      }
+    ],
     coachNote:
-      'Keep it brief and confident while the guest enters information. Let them know the next step is a message with the app download link, and that the app is the best place to see points and transactions. First name, last name, and phone number are required.',
+      'Lookup first, then update and turn loyalty on. Only create a new profile if you cannot find the guest.',
   },
   {
     id: 'pos-busy-check',
@@ -506,7 +550,7 @@ export const TEAM_STEPS: Step[] = [
     summary:
       'Close the module by choosing the right move for a busy checkout moment.',
     script:
-      'We just launched our new loyalty program. You get 5,000 bonus points when you sign up before April 30. Here is a QR code if you\'d like to join.',
+      DEN_REWARDS_PROMO?.busyInvite ?? 'We just launched our new loyalty program. Here is a QR code if you\'d like to join.',
     prompt: 'There are four people in line and no backup. What should you do with the loyalty invite?',
     options: [
       {
@@ -539,20 +583,20 @@ export const TEAM_STEPS: Step[] = [
       'A guest asks how the rewards work while you are at checkout and you only have a moment to explain it. What should you tell them?',
     options: [
       {
-        text: 'Guests earn 10 points for every $1, and 1,000 points equals $1 in rewards.',
-        correct: true,
-        feedback: 'Correct. That is the core point value language.',
-      },
-      {
         text: 'Guests earn 10 points for every $1, and 100 points equals $10 in rewards.',
         correct: false,
         feedback: 'Not correct. That changes the reward math and could mislead the guest. Keep the simple value: 10 points per $1, 1,000 points equals $1.',
       },
       {
+        text: 'Guests earn 10 points for every $1, and 1,000 points equals $1 in rewards.',
+        correct: true,
+        feedback: 'Correct. That is the core point value language.',
+      },
+      {
         text: 'Guests redeem 1,000 points for $5 off.',
         correct: false,
         feedback: 'Not correct. That overstates the reward and would create confusion. Keep the point-to-dollar value exact.',
-      },
+      }
     ],
   },
   {
@@ -567,11 +611,6 @@ export const TEAM_STEPS: Step[] = [
       'A guest agrees to sign up and hands over their ID. What information do you need to collect to get them enrolled?',
     options: [
       {
-        text: 'First name, last name, and phone number.',
-        correct: true,
-        feedback: 'Correct. Those are the required enrollment details in the guide.',
-      },
-      {
         text: 'First name and email address.',
         correct: false,
         feedback: 'Not correct. That leaves out the last name and phone number, which are needed to enroll cleanly. Collect the full basic details.',
@@ -581,6 +620,11 @@ export const TEAM_STEPS: Step[] = [
         correct: false,
         feedback: 'Not correct. Home address slows the flow and is not part of the basic signup. Stick to the required fields only.',
       },
+      {
+        text: 'First name, last name, and phone number.',
+        correct: true,
+        feedback: 'Correct. Those are the required enrollment details in the guide.',
+      }
     ],
   },
   {
@@ -605,20 +649,28 @@ export const TEAM_STEPS: Step[] = [
     eyebrow: 'Account Management',
     title: 'Recommend the App First',
     summary:
-      'Lead with the app first. It is the easiest way to see points and transactions.',
+      'Lead with the app first. It lets guests see points, recent transactions, favorites, and special rewards.',
     script:
-      'The best way to track your points and see your transactions is in the Den Rewards app. You\'ll get a message with a link to download it.',
+      'The best way to track your points and see your transactions is in the Den Rewards app. It also lets guests save favorites and unlock special rewards and bonuses. You can download it from the App Store or Google Play, and you\'ll also get a message with a link to download it.',
     bullets: [
       'Use this as the first recommendation for rewards activity',
       'Keep the tone natural at the till',
+      'Mention App Store and Google Play when asked where to get it',
+      'Point out favorites and special rewards as app benefits',
     ],
-    mediaPlaceholders: [
-      {
-        title: 'Add customer details',
-        body: 'Use this for the form fields staff need to complete during signup.',
-        imageSrc: '/pos/2026-03-26-13-02-55-pos-main.png',
-        imageAlt: 'Add customer details form',
-      },
+  },
+  {
+    id: 'account-fallbacks',
+    module: 'account',
+    kind: 'brief',
+    eyebrow: 'Account Management',
+    title: 'If they do not want the app',
+    summary:
+      'Keep the app first, then offer wallet pass or web wallet only if the guest does not want to download it.',
+    bullets: [
+      'Wallet pass is the next fallback',
+      'Web wallet is the last fallback',
+      'Keep the explanation short and practical',
     ],
   },
   {
@@ -630,17 +682,9 @@ export const TEAM_STEPS: Step[] = [
     summary:
       'Use wallet pass only if the guest does not want the app.',
     bullets: [
-      'Position it as a fallback option',
+      'Use it only after the app offer',
+      'Keep it as the next fallback option',
       'Use it for quick lookup at checkout',
-      'Point guests to setup help only when needed',
-    ],
-    mediaPlaceholders: [
-      {
-        title: 'Tender and payment',
-        body: 'Use this to show where loyalty points or other tender options appear in the checkout flow.',
-        imageSrc: '/pos/2026-03-26-13-05-07-pos-main.png',
-        imageAlt: 'Checkout payment method selection screen',
-      },
     ],
   },
   {
@@ -652,17 +696,9 @@ export const TEAM_STEPS: Step[] = [
     summary:
       'Use the web wallet only when the guest does not want the app or wallet pass.',
     bullets: [
-      'Use it to view points, transactions, rewards, and account details',
-      'Position it as the fallback access option',
-      'Escalate technical questions to the store manager when needed',
-    ],
-    mediaPlaceholders: [
-      {
-        title: 'Product and SKU',
-        body: 'Use this when showing the main POS item list and item lookup layout.',
-        imageSrc: '/pos/2026-03-26-13-04-35-pos-main.png',
-        imageAlt: 'POS product search and item list screen',
-      },
+      'Use it only after the app and wallet pass',
+      'Keep it as the last fallback option',
+      'Use it to view points and account details',
     ],
   },
   {
@@ -704,20 +740,20 @@ export const TEAM_STEPS: Step[] = [
       'A guest wants to check their rewards activity and asks what they should use. Which option should staff position first?',
     options: [
       {
-        text: 'The Cascadia Den Rewards App.',
-        correct: true,
-        feedback: 'Correct. The app is the primary account-management option and the best place to check points and transactions.',
-      },
-      {
         text: 'The wallet pass is probably the fastest option.',
         correct: false,
         feedback: 'Not correct. That puts a fallback ahead of the app and weakens the recommendation. Start with the app, then offer wallet pass if needed.',
       },
       {
+        text: 'The Cascadia Den Rewards App.',
+        correct: true,
+        feedback: 'Correct. The app is the primary account-management option and the best place to check points and transactions.',
+      },
+      {
         text: 'The web wallet is the easiest way to get started.',
         correct: false,
-        feedback: 'Not correct. That promotes a fallback as the first choice. Recommend the app first and keep web wallet as backup.',
-      },
+        feedback: 'Not correct. That leads with a fallback instead of the app. Recommend the app first and keep the backup options secondary.',
+      }
     ],
   },
   {
@@ -732,11 +768,6 @@ export const TEAM_STEPS: Step[] = [
       'A guest is stuck while setting up the app or wallet after checkout. What should staff do?',
     options: [
       {
-        text: 'Escalate the technical question to the store manager when needed.',
-        correct: true,
-        feedback: 'Correct. That matches the training guidance for technical help.',
-      },
-      {
         text: 'Try a couple of basic steps and see if it resolves the issue.',
         correct: false,
         feedback: 'Not correct. Guessing at fixes can confuse the guest and waste time. Escalate to the manager when it needs deeper help.',
@@ -746,6 +777,11 @@ export const TEAM_STEPS: Step[] = [
         correct: false,
         feedback: 'Not correct. That avoids the issue but does not give the guest a clear next step. Route it to the manager directly.',
       },
+      {
+        text: 'Escalate the technical question to the store manager when needed.',
+        correct: true,
+        feedback: 'Correct. That matches the training guidance for technical help.',
+      }
     ],
   },
   {
@@ -773,7 +809,7 @@ export const TEAM_STEPS: Step[] = [
         text: 'You can use the points right away once the app link comes through, so I\'d download it now and apply them today.',
         correct: false,
         feedback: 'Not correct. That gives the guest the wrong timing for redemption. Keep it accurate: points are for a future visit, and the app is best for tracking.',
-      },
+      }
     ],
   },
   {

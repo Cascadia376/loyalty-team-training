@@ -75,7 +75,7 @@
 }
 
 .screen-content-home {
-  @apply space-y-4;
+  @apply space-y-3;
 }
 
 .hero-card,
@@ -172,6 +172,10 @@
   @apply overflow-hidden;
 }
 
+.screen-content-home .hero-card {
+  @apply px-4 py-3.5;
+}
+
 .eyebrow {
   @apply mb-2 text-[10px] font-semibold uppercase tracking-[0.28em] text-brand-red;
 }
@@ -179,6 +183,10 @@
 .hero-title,
 .module-title {
   @apply font-display text-[2rem] font-semibold leading-[0.95] tracking-tight text-brand-brown;
+}
+
+.module-heading .module-title {
+  @apply mb-2;
 }
 
 .module-title-quiz {
@@ -189,6 +197,7 @@
 .module-summary,
 .summary-card,
 .highlight-note,
+.home-summary-copy,
 .feedback-card,
 .coach-note p,
 .check-row span,
@@ -205,8 +214,17 @@
   @apply text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-red;
 }
 
-.hero-brand-row {
-  @apply mb-4 flex items-center justify-between gap-3;
+.hero-brand-top,
+.hero-brand-bottom {
+  @apply flex justify-center;
+}
+
+.hero-brand-top {
+  @apply mb-2;
+}
+
+.hero-brand-bottom {
+  @apply mt-3;
 }
 
 .hero-brand {
@@ -215,20 +233,20 @@
 }
 
 .hero-brand-cascadia {
-  width: 64px;
-  height: 64px;
+  width: 56px;
+  height: 56px;
 }
 
 .hero-brand-den {
-  width: 92px;
-  height: 92px;
+  width: 96px;
+  height: 96px;
 }
 
 .hero-art {
   position: relative;
-  margin-top: 18px;
-  margin-bottom: 14px;
-  min-height: 220px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  min-height: 160px;
   border-radius: 24px;
   overflow: hidden;
 }
@@ -238,26 +256,30 @@
   z-index: 2;
   display: block;
   width: 100%;
-  height: 220px;
+  height: 160px;
   object-fit: contain;
   object-position: center bottom;
 }
 
 .hero-actions {
-  @apply mt-5 space-y-3;
+  @apply mt-2 space-y-3;
 }
 
 .hero-primary {
-  @apply inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand-red px-5 py-4 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(215,35,35,0.22)] transition hover:bg-brand-red/90;
+  @apply inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand-red px-5 py-3.5 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(215,35,35,0.22)] transition hover:bg-brand-red/90;
 }
 
-.hero-meta {
-  @apply flex items-center justify-between gap-2 text-sm font-semibold text-brand-brown;
+.home-summary {
+  @apply mt-2 rounded-2xl border border-brand-brown/10 bg-white/70 px-4 py-2;
+}
+
+.home-summary-label {
+  @apply text-[10px] font-semibold uppercase tracking-[0.22em] text-brand-red;
 }
 
 .hero-secondary-link,
 .knowledge-link-inline {
-  @apply inline-flex items-center justify-center gap-2 rounded-full border border-brand-brown/10 bg-white px-4 py-3 text-sm font-semibold text-brand-brown transition hover:bg-brand-alt;
+  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border border-brand-red/20 bg-white px-4 py-3 text-sm font-semibold text-brand-red shadow-sm transition hover:-translate-y-0.5 hover:border-brand-red/30 hover:bg-brand-red/5 hover:shadow-[0_10px_20px_rgba(196,30,58,0.12)];
 }
 
 .hero-secondary-link {
@@ -265,18 +287,12 @@
 }
 
 .onboarding-card,
-.training-summary-card,
-.module-preview-card,
-.media-placeholder-card {
+.training-summary-card {
   @apply rounded-[22px] border border-brand-brown/10 bg-white px-4 py-4;
 }
 
-.media-placeholder-card-image {
-  @apply bg-brand-alt/40;
-}
-
 .onboarding-card {
-  @apply text-left;
+  @apply text-left py-3;
 }
 
 .form-stack {
@@ -307,50 +323,24 @@
   appearance: none;
 }
 
-.module-preview-grid,
-.media-placeholder-grid {
-  @apply grid gap-3;
-}
-
-.module-preview-top {
-  @apply mb-3 flex items-center justify-between gap-2;
-}
-
-.module-preview-icon,
-.media-placeholder-icon {
-  @apply inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-alt text-brand-red;
-}
-
-.media-screenshot-frame {
-  @apply mt-3 overflow-hidden rounded-[18px] border border-brand-brown/10 bg-white shadow-sm;
-}
-
-.media-screenshot {
-  @apply block h-auto w-full;
-}
-
-.module-preview-title,
-.media-placeholder-title,
 .training-summary-name {
   @apply font-display text-xl font-semibold text-brand-brown;
 }
 
-.module-preview-copy,
-.media-placeholder-copy,
 .training-summary-copy {
   @apply mt-2 text-sm leading-6 text-brand-dark/72;
 }
 
 .training-summary-card {
-  @apply mb-4 flex items-center justify-between gap-3;
+  @apply mb-3 flex items-center justify-between gap-3;
 }
 
 .training-summary-score {
-  @apply rounded-full bg-brand-red px-4 py-2 text-sm font-semibold text-white;
+  @apply rounded-full bg-brand-red px-3.5 py-2 text-sm font-semibold text-white;
 }
 
 .module-strip {
-  @apply mb-4 flex flex-wrap gap-2;
+  @apply mb-3 flex flex-wrap gap-2;
 }
 
 .module-pill {
@@ -362,11 +352,11 @@
 }
 
 .module-heading-top {
-  @apply mb-3 flex items-center justify-between gap-3;
+  @apply mb-2.5 flex items-center justify-between gap-3;
 }
 
 .module-start-banner {
-  @apply mb-4 flex items-start gap-3 rounded-[22px] border border-brand-red/15 bg-white/90 px-4 py-4;
+  @apply mb-3 flex items-start gap-3 rounded-[22px] border border-brand-red/15 bg-white/90 px-4 py-3.5;
 }
 
 .module-start-icon {
@@ -405,6 +395,10 @@
   @apply px-4 py-4 shadow-sm;
 }
 
+.progressive-reveal-button {
+  @apply mt-3 inline-flex items-center gap-2 rounded-full border border-brand-red/20 bg-brand-red/5 px-4 py-2.5 text-sm font-semibold text-brand-red transition hover:border-brand-red/30 hover:bg-brand-red/10;
+}
+
 .highlight-value {
   @apply mt-2 font-display text-2xl font-semibold text-brand-brown;
 }
@@ -434,7 +428,27 @@
 }
 
 .prompt-text {
-  @apply mt-2 text-base leading-7 text-brand-dark/92;
+  @apply mt-2 text-base font-semibold leading-7 text-brand-dark/92;
+}
+
+.module-heading .module-summary {
+  @apply mt-2.5;
+}
+
+.screenshot-card {
+  @apply mt-3 rounded-[20px] border border-brand-brown/10 bg-brand-alt/20 px-3 py-3;
+}
+
+.screenshot-frame {
+  @apply overflow-hidden rounded-[16px] border border-brand-brown/10 bg-white;
+}
+
+.screenshot-image {
+  @apply block h-auto w-full;
+}
+
+.screenshot-caption {
+  @apply mt-2 text-sm leading-6 text-brand-dark/72;
 }
 
 .option-stack,
@@ -520,7 +534,7 @@
 }
 
 .path-header {
-  @apply flex items-center justify-between gap-3 px-4 pb-3 pt-4;
+  @apply flex items-center justify-between gap-3 px-4 pb-2.5 pt-3;
 }
 
 .path-header-meta {
