@@ -93,14 +93,14 @@ export const MODULE_CONFIG: Record<
   pos: {
     label: 'Signup, Earn, Redeem',
     shortLabel: 'POS',
-    description: 'Points, tiers, redemption, and enrollment steps. Use the simplest explanation and keep the line moving.',
+    description: 'Points, tiers, redemption, and enrollment steps. Keep it simple and keep the line moving.',
     icon: Store,
     themeClass: 'module-theme-pos',
   },
   account: {
     label: 'Account Management',
     shortLabel: 'Account',
-    description: 'Where guests can check points, transactions, and rewards after signup. Recommend the app first and keep the line moving.',
+    description: 'Where guests can check points, transactions, and rewards after signup. Recommend the app first.',
     icon: Smartphone,
     themeClass: 'module-theme-account',
   },
@@ -113,13 +113,13 @@ export const FAQ_SECTIONS: FaqSection[] = [
       {
         question: 'What is The Den Rewards program?',
         guestAnswer:
-          'The Den Rewards lets guests earn points every time they shop and use those points for money off a future visit.',
+          'The Den Rewards is a free program where guests earn points on every visit and use them later for money off.',
         teamNote: 'Keep it simple: join, earn points, redeem later.',
       },
       {
         question: 'How do guests earn points, and what are they worth?',
         guestAnswer:
-          'Guests earn 10 points for every $1 spent. Every 1,000 points equals $1 in rewards.',
+          'Guests earn 10 points for every $1 spent. Every 1,000 points equals $1.',
         teamNote:
           'A simple shortcut is "about $1 back for every $100 spent." Avoid detailed math unless asked.',
       },
@@ -156,7 +156,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
       {
         question: 'Can a guest use points right away?',
         guestAnswer:
-          'Points are ready to use on the next visit. They cannot be earned and redeemed on the same day.',
+          'Points are ready on the next visit. They cannot be earned and redeemed the same day.',
         teamNote: 'Points become available about 24 hours after the purchase.',
       },
       {
@@ -167,7 +167,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
       {
         question: 'How can a guest check their points?',
         guestAnswer:
-          'The Den Rewards app is the best way to check points and view transactions. Guests will get a message with the link to download it. If needed, they can also see their points on the receipt and through their loyalty account.',
+          'The Den Rewards app is the best way to check points and view transactions. Guests will get a message with the link to download it. Receipt and loyalty account are backup options if needed.',
       },
       {
         question: 'What if a guest forgot they were a member?',
@@ -181,22 +181,22 @@ export const FAQ_SECTIONS: FaqSection[] = [
       {
         question: 'What if points do not appear immediately?',
         guestAnswer:
-          'Points appear after the transaction is completed and will be available for the next visit.',
+          'Points appear after checkout and are available on the next visit.',
       },
       {
         question: 'What if the guest wants to redeem but does not have enough points?',
         guestAnswer:
-          'Let them know they are close to their first reward and likely need only another visit or two.',
+          'Tell them they are close and probably only need another visit or two.',
       },
       {
         question: 'What if the guest asks why they cannot redeem today?',
         guestAnswer:
-          'Points activate for the next visit so everyone earns rewards the same way.',
+          'Points are for the next visit so every guest earns rewards the same way.',
       },
       {
         question: 'What details are required for signup?',
         guestAnswer:
-          'Use first name, last name, and phone number, then confirm enrollment and let the guest know a welcome text will be sent.',
+          'Use first name, last name, and phone number. Confirm enrollment and let the guest know a welcome text will be sent.',
       },
     ],
   },
@@ -590,7 +590,7 @@ export const TEAM_STEPS: Step[] = [
     eyebrow: 'Account Management',
     title: 'Account access',
     summary:
-      'After signup, guide guests to the Den Rewards app first. It is the best way to check points and transactions, and guests will receive a message with the download link.',
+      'After signup, send guests to the Den Rewards app first. It is the best way to check points and transactions, and guests will get a message with the download link.',
     bullets: [
       'Den Rewards app is the primary recommendation',
       'Guests receive a message with the app download link',
@@ -605,7 +605,7 @@ export const TEAM_STEPS: Step[] = [
     eyebrow: 'Account Management',
     title: 'Recommend the App First',
     summary:
-      'Lead with the app first. It is the easiest way for guests to see points and transactions.',
+      'Lead with the app first. It is the easiest way to see points and transactions.',
     script:
       'The best way to track your points and see your transactions is in the Den Rewards app. You\'ll get a message with a link to download it.',
     bullets: [
@@ -628,7 +628,7 @@ export const TEAM_STEPS: Step[] = [
     eyebrow: 'Account Management',
     title: 'Wallet pass',
     summary:
-      'Use wallet pass only as a secondary option when the guest does not want the app.',
+      'Use wallet pass only if the guest does not want the app.',
     bullets: [
       'Position it as a fallback option',
       'Use it for quick lookup at checkout',
@@ -650,7 +650,7 @@ export const TEAM_STEPS: Step[] = [
     eyebrow: 'Account Management',
     title: 'Web wallet',
     summary:
-      'Use the web wallet as a fallback option when the guest does not want the app or wallet pass.',
+      'Use the web wallet only when the guest does not want the app or wallet pass.',
     bullets: [
       'Use it to view points, transactions, rewards, and account details',
       'Position it as the fallback access option',
@@ -783,7 +783,7 @@ export const TEAM_STEPS: Step[] = [
     eyebrow: 'Complete Training',
     title: 'Submit your completion',
     summary:
-      'Finish the training so your store can track who is ready. Invite once, keep it brief, do not push after a no, and recommend the app first.',
+      'Finish training so your store can track who is ready. Invite once, keep it brief, do not push after a no, and recommend the app first.',
     checklist: [
       'I know the standard invitation',
       'I know what to say when a guest says no',
@@ -802,7 +802,7 @@ export const MANAGER_STEPS: Step[] = [
     eyebrow: 'Manager Tools',
     title: 'Coach the behavior',
     summary:
-      'Managers should reinforce the invitation, the yes or no response, and line-speed discipline.',
+      'Managers should reinforce the invite, the response, and line speed.',
     bullets: [
       'Watch whether staff ask',
       'Watch how they ask',
@@ -818,7 +818,7 @@ export const MANAGER_STEPS: Step[] = [
       'Keeps the line moving',
     ],
     coachNote:
-      'Use this as a quick manager review checklist during floor coaching.',
+      'Use this for quick floor coaching checks.',
   },
 ];
 
