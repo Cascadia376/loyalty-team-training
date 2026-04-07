@@ -8,7 +8,6 @@ import {
   ChevronDown,
   Circle,
   ClipboardList,
-  ImagePlus,
   MessageSquareQuote,
   ShieldCheck,
   Store,
@@ -21,6 +20,7 @@ import {
   PATHS,
   STORE_OPTIONS,
   TEAM_STEPS,
+  type Highlight,
   type ModuleKey,
   type PathDefinition,
   type PathKey,
@@ -29,7 +29,8 @@ import {
 } from './trainingData';
 
 interface TraineeInfo {
-  name: string;
+  firstName: string;
+  lastName: string;
   store: string;
   otherStore: string;
   startedAt: string | null;
@@ -46,7 +47,8 @@ interface CompletionPayload {
 }
 
 const initialTrainee = (): TraineeInfo => ({
-  name: '',
+  firstName: '',
+  lastName: '',
   store: '',
   otherStore: '',
   startedAt: null,
@@ -88,6 +90,43 @@ function isStepComplete(
 
 function moduleSteps(module: ModuleKey) {
   return TEAM_STEPS.filter((step) => step.module === module);
+}
+
+function isActiveThroughDate(showUntil: string) {
+  const [year, month, day] = showUntil.split('-').map(Number);
+  const endOfDay = new Date(year, month - 1, day, 23, 59, 59, 999);
+  return new Date() <= endOfDay;
+}
+
+interface ProgressiveHighlightsProps {
+  items: Highlight[];
+  revealSequentially: boolean;
+  canRevealMore: boolean;
+  onRevealNext: () => void;
+}
+
+function ProgressiveHighlights({
+  items,
+  revealSequentially,
+  canRevealMore,
+  onRevealNext,
+}: ProgressiveHighlightsProps) {
+  return (
+    <div className="highlight-grid" aria-live="polite">
+      {items.map((item, index) => (
+        <div key={item.label} className="highlight-card">
+          <p className="highlight-label">{item.label}</p>
+          <p className="highlight-value">{item.value}</p>
+          {item.note && <p className="highlight-note">{item.note}</p>}
+          {revealSequentially && index === items.length - 1 && canRevealMore && (
+            <button type="button" className="progressive-reveal-button" onClick={onRevealNext}>
+              Show next response
+            </button>
+          )}
+        </div>
+      ))}
+    </div>
+  );
 }
 
 export default function App() {
@@ -133,8 +172,7 @@ export default function App() {
 
   const normalizedStore =
     trainee.store === 'Other store' ? trainee.otherStore.trim() : trainee.store;
-  const nameParts = trainee.name.trim().split(/\s+/).filter(Boolean);
-  const hasFullName = nameParts.length >= 2;
+  const hasFullName = trainee.firstName.trim().length > 0 && trainee.lastName.trim().length > 0;
   const canStartTraining = hasFullName && normalizedStore.length > 0;
   const firstTryCorrectCount = scenarioSteps.filter(
     (step) => firstAttemptResults[step.id],
@@ -183,7 +221,7 @@ export default function App() {
   const submitCompletion = async (): Promise<boolean> => {
     if (!canStartTraining || !trainee.startedAt) {
       setSubmissionState('error');
-      setSubmissionMessage('Enter your name and store before submitting completion.');
+      setSubmissionMessage('Enter your first name, last name, and store before submitting completion.');
       return false;
     }
 
@@ -191,7 +229,7 @@ export default function App() {
     setSubmissionMessage('');
 
     const payload: CompletionPayload = {
-      traineeName: trainee.name.trim(),
+      traineeName: `${trainee.firstName.trim()} ${trainee.lastName.trim()}`.trim(),
       store: normalizedStore,
       startedAt: trainee.startedAt,
       completedAt: new Date().toISOString(),
@@ -250,8 +288,6 @@ export default function App() {
           <HomeScreen
             trainee={trainee}
             canStartTraining={canStartTraining}
-            completionScore={completionScore}
-            moduleStatus={moduleStatus}
             onTraineeChange={setTrainee}
             onStartTraining={() => {
               setSubmissionState('idle');
@@ -341,16 +377,12 @@ export default function App() {
 function HomeScreen({
   trainee,
   canStartTraining,
-  completionScore,
-  moduleStatus,
   onTraineeChange,
   onStartTraining,
   onOpenKnowledgeBase,
 }: {
   trainee: TraineeInfo;
   canStartTraining: boolean;
-  completionScore: number;
-  moduleStatus: Record<ModuleKey, boolean>;
   onTraineeChange: (trainee: TraineeInfo) => void;
   onStartTraining: () => void;
   onOpenKnowledgeBase: () => void;
@@ -358,8 +390,7 @@ function HomeScreen({
   return (
     <main className="screen-content screen-content-home">
       <section className="hero-card">
-        <div className="hero-brand-row">
-          <img src="/logo.png" alt="Cascadia Liquor" className="hero-brand hero-brand-cascadia" />
+        <div className="hero-brand-top" aria-label="The Den Rewards">
           <img src="/The-Den_logo-brown.png" alt="The Den Rewards" className="hero-brand hero-brand-den" />
         </div>
         <p className="eyebrow">The Den Rewards</p>
@@ -367,26 +398,37 @@ function HomeScreen({
         <p className="hero-copy">
           Invitation, quick responses, points, redemption, and enrollment steps for launch.
         </p>
-          <div className="hero-art">
-            <img src="/The-Den_Bears-All.png" alt="The Den bear family" className="hero-bears" />
-          </div>
+        <div className="home-summary" aria-label="Training structure">
+          <p className="home-summary-label">Training structure</p>
+          <p className="home-summary-copy">3 short modules � Guest invite, POS basics, account access � Takes about 3 minutes</p>
+        </div>
+        <div className="hero-art">
+          <img src="/The-Den_Bears-All.png" alt="The Den bear family" className="hero-bears" />
+        </div>
         <div className="hero-actions">
           <div className="onboarding-card">
                 <p className="prompt-label">Before training starts</p>
-                <p className="form-hint">Enter first and last name to begin.</p>
+                <p className="form-hint">Enter first name, last name, and store to begin.</p>
                 <div className="form-stack">
                   <label className="field-label">
-                    <span>First and last name</span>
+                    <span>First name</span>
                     <div className="field-input-wrap">
                       <UserRound size={16} />
-                      <input className="field-input" value={trainee.name} onChange={(e) => onTraineeChange({ ...trainee, name: e.target.value })} placeholder="Enter first and last name" />
+                      <input className="field-input" value={trainee.firstName} onChange={(e) => onTraineeChange({ ...trainee, firstName: e.target.value })} placeholder="Enter first name" required />
+                    </div>
+                  </label>
+                  <label className="field-label">
+                    <span>Last name</span>
+                    <div className="field-input-wrap">
+                      <UserRound size={16} />
+                      <input className="field-input" value={trainee.lastName} onChange={(e) => onTraineeChange({ ...trainee, lastName: e.target.value })} placeholder="Enter last name" required />
                     </div>
                   </label>
               <label className="field-label">
                 <span>Store</span>
                 <div className="field-input-wrap field-select-wrap">
                   <Store size={16} />
-                  <select className="field-input field-select" value={trainee.store} onChange={(e) => onTraineeChange({ ...trainee, store: e.target.value })}>
+                  <select className="field-input field-select" value={trainee.store} onChange={(e) => onTraineeChange({ ...trainee, store: e.target.value })} required>
                     <option value="">Select your store</option>
                     {STORE_OPTIONS.map((store) => (
                       <option key={store} value={store}>{store}</option>
@@ -394,44 +436,29 @@ function HomeScreen({
                   </select>
                 </div>
               </label>
-              {trainee.store === 'Other store' && (
+              {trainee.store === "Other store" && (
                 <label className="field-label">
                   <span>Other store name</span>
                   <div className="field-input-wrap">
                     <Store size={16} />
-                    <input className="field-input" value={trainee.otherStore} onChange={(e) => onTraineeChange({ ...trainee, otherStore: e.target.value })} placeholder="Enter your store" />
+                    <input className="field-input" value={trainee.otherStore} onChange={(e) => onTraineeChange({ ...trainee, otherStore: e.target.value })} placeholder="Enter your store" required />
                   </div>
                 </label>
               )}
             </div>
           </div>
 
-          <div className="module-preview-grid">
-            {(Object.keys(MODULE_CONFIG) as ModuleKey[]).map((key) => {
-              const module = MODULE_CONFIG[key];
-              const Icon = module.icon;
-              return (
-                <div key={key} className="module-preview-card">
-                  <div className="module-preview-top">
-                    <div className="module-preview-icon"><Icon size={18} /></div>
-                    {moduleStatus[key] && <span className="mini-badge"><CheckCircle2 size={14} />Complete</span>}
-                  </div>
-                  <p className="module-preview-title">{module.label}</p>
-                  <p className="module-preview-copy">{module.description}</p>
-                </div>
-              );
-            })}
-          </div>
-
           <button type="button" className="hero-primary" onClick={onStartTraining} disabled={!canStartTraining}>
             Team Training
             <ArrowRight size={18} />
           </button>
-          <div className="hero-meta"><span>Completion score: {completionScore}%</span></div>
           <button type="button" className="hero-secondary-link" onClick={onOpenKnowledgeBase}>
             <BookOpen size={16} />
             Knowledge Base
           </button>
+        </div>
+        <div className="hero-brand-bottom" aria-label="Cascadia Liquor">
+          <img src="/logo.png" alt="Cascadia Liquor" className="hero-brand hero-brand-cascadia" />
         </div>
       </section>
     </main>
@@ -480,6 +507,14 @@ function PathExperience({
   const selectedAnswer = currentStep.kind === 'scenario' ? scenarioAnswers[currentStep.id] : undefined;
   const selectedOption = selectedAnswer !== undefined && currentStep.options ? currentStep.options[selectedAnswer] : undefined;
   const checkedItems = checklistState[currentStep.id] ?? [];
+  const [revealCounts, setRevealCounts] = useState<Record<string, number>>({});
+  const visibleTimedBullets = currentStep.timedBullets?.filter((item) => isActiveThroughDate(item.showUntil)) ?? [];
+  const highlightCount = currentStep.highlights?.length ?? 0;
+  const revealSequentially = Boolean(currentStep.progressiveReveal && highlightCount > 0);
+  const visibleHighlightCount = revealSequentially ? Math.min(revealCounts[currentStep.id] ?? 1, highlightCount) : highlightCount;
+  const visibleHighlights = currentStep.highlights?.slice(0, visibleHighlightCount) ?? [];
+  const canRevealMoreHighlights = revealSequentially && visibleHighlightCount < highlightCount;
+  const showSupportingBullets = !revealSequentially || visibleHighlightCount >= highlightCount;
   const allChecklistItemsChecked = currentStep.checklist ? currentStep.checklist.every((item) => checkedItems.includes(item)) : false;
     const canAdvance = currentStep.kind === 'scenario'
       ? Boolean(selectedOption?.correct)
@@ -490,9 +525,17 @@ function PathExperience({
     const isLastStep = stepIndex === path.steps.length - 1;
     const moduleKey = currentStep.module;
     const currentModule = moduleKey ? MODULE_CONFIG[moduleKey] : null;
-    const currentModuleSteps = moduleKey ? moduleSteps(moduleKey) : [];
-    const currentModuleIndex = moduleKey ? currentModuleSteps.findIndex((step) => step.id === currentStep.id) : -1;
-    const isModuleStart = currentModuleIndex === 0;
+  const currentModuleSteps = moduleKey ? moduleSteps(moduleKey) : [];
+  const currentModuleIndex = moduleKey ? currentModuleSteps.findIndex((step) => step.id === currentStep.id) : -1;
+  const isModuleStart = currentModuleIndex === 0;
+
+  const revealNextHighlight = () => {
+    if (!revealSequentially) return;
+    setRevealCounts((prev) => ({
+      ...prev,
+      [currentStep.id]: Math.min((prev[currentStep.id] ?? 1) + 1, highlightCount),
+    }));
+  };
 
   return (
     <>
@@ -510,25 +553,28 @@ function PathExperience({
             <section className="training-summary-card">
               <div>
                 <p className="prompt-label">Training session</p>
-                <p className="training-summary-name">{trainee.name || 'Unnamed trainee'}</p>
+                <p className="training-summary-name">
+                  {trainee.firstName || trainee.lastName
+                    ? `${trainee.firstName} ${trainee.lastName}`.trim()
+                    : 'Unnamed trainee'}
+                </p>
                 <p className="training-summary-copy">{trainee.store === 'Other store' ? trainee.otherStore : trainee.store}</p>
               </div>
-              <div className="training-summary-score">Score {completionScore}%</div>
+              <div className="training-summary-score">Percentage completed {completionScore}%</div>
             </section>
-            <section className="module-strip">
-              {(Object.keys(MODULE_CONFIG) as ModuleKey[]).map((key) => {
-                const module = MODULE_CONFIG[key];
-                const Icon = module.icon;
-                const isCurrent = key === moduleKey;
-                return (
-                  <div key={key} className={`module-pill ${isCurrent ? 'module-pill-current' : ''}`}>
-                    <Icon size={16} />
-                    <span>{module.shortLabel}</span>
-                    {moduleStatus[key] && <CheckCircle2 size={14} />}
-                  </div>
-                );
-              })}
-            </section>
+              <section className="module-strip">
+                {(Object.keys(MODULE_CONFIG) as ModuleKey[]).map((key) => {
+                  const module = MODULE_CONFIG[key];
+                  const Icon = module.icon;
+                  const isCurrent = key === moduleKey;
+                  return (
+                    <div key={key} className={`module-pill ${isCurrent ? 'module-pill-current' : ''}`}>
+                      <Icon size={16} />
+                      <span>{module.shortLabel}</span>
+                    </div>
+                  );
+                })}
+              </section>
           </>
         )}
         <AnimatePresence mode="wait">
@@ -555,10 +601,29 @@ function PathExperience({
               <h2 className={`module-title ${currentStep.title === 'Module quiz' ? 'module-title-quiz' : ''}`}>{currentStep.title}</h2>
               <p className="module-summary">{currentStep.summary}</p>
             </div>
-            {currentStep.highlights && <div className="highlight-grid">{currentStep.highlights.map((item) => <div key={item.label} className="highlight-card"><p className="highlight-label">{item.label}</p><p className="highlight-value">{item.value}</p>{item.note && <p className="highlight-note">{item.note}</p>}</div>)}</div>}
+            {currentStep.screenshot && (
+              <figure className="screenshot-card" aria-label={currentStep.screenshot.alt}>
+                <div className="screenshot-frame">
+                  <img src={currentStep.screenshot.src} alt={currentStep.screenshot.alt} className="screenshot-image" loading="lazy" />
+                </div>
+                <figcaption className="screenshot-caption">{currentStep.screenshot.caption}</figcaption>
+              </figure>
+            )}
+            {visibleHighlights.length > 0 && (
+              <ProgressiveHighlights
+                items={visibleHighlights}
+                revealSequentially={revealSequentially}
+                canRevealMore={canRevealMoreHighlights}
+                onRevealNext={revealNextHighlight}
+              />
+            )}
             {currentStep.script && <div className="script-card"><MessageSquareQuote size={18} className="script-icon" /><p>{currentStep.script}</p></div>}
-              {currentStep.bullets && <ul className="bullet-list bullet-list-card">{currentStep.bullets.map((item) => <li key={item}>{item === 'Bonus ends soon - April 30' ? <strong>{item}</strong> : item}</li>)}</ul>}
-            {currentStep.mediaPlaceholders && <div className="media-placeholder-grid">{currentStep.mediaPlaceholders.map((item) => <div key={item.title} className={`media-placeholder-card ${item.imageSrc ? 'media-placeholder-card-image' : ''}`}><div className="media-placeholder-icon"><ImagePlus size={18} /></div><p className="media-placeholder-title">{item.title}</p>{item.imageSrc ? <div className="media-screenshot-frame"><img src={item.imageSrc} alt={item.imageAlt ?? item.title} className="media-screenshot" loading="lazy" /></div> : null}<p className="media-placeholder-copy">{item.body}</p></div>)}</div>}
+              {showSupportingBullets && (currentStep.bullets?.length || visibleTimedBullets.length) && (
+                <ul className="bullet-list bullet-list-card">
+                  {currentStep.bullets?.map((item) => <li key={item}>{item}</li>)}
+                  {visibleTimedBullets.map((item) => <li key={item.text}><strong>{item.text}</strong></li>)}
+                </ul>
+              )}
             {currentStep.kind === 'scenario' && currentStep.prompt && currentStep.options && <ScenarioCard step={currentStep} selectedAnswer={selectedAnswer} selectedOption={selectedOption} onScenarioAnswer={onScenarioAnswer} />}
             {currentStep.checklist && <ChecklistCard stepId={currentStep.id} items={currentStep.checklist} checkedItems={checkedItems} onToggleChecklist={onToggleChecklist} />}
             {currentStep.coachNote && <div className="coach-note"><ShieldCheck size={18} /><div><p className="coach-note-title">NOTE</p><p>{currentStep.coachNote}</p></div></div>}
@@ -672,3 +737,5 @@ function KnowledgeBaseSheet({ isOpen, onClose }: { isOpen: boolean; onClose: () 
     </AnimatePresence>
   );
 }
+
+
