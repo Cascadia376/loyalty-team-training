@@ -473,7 +473,7 @@ export const TEAM_STEPS: Step[] = [
     screenshot: {
       src: '/pos/2026-03-26-13-01-03-pos-main-crop.png',
       alt: 'Add Customer to Cart dialog with search field and customer results',
-      caption: 'Search by name, phone, or email to find the guest before checkout.',
+      caption: 'Search by phone number to find the guest before checkout.',
     },
   },
   {
@@ -632,13 +632,27 @@ export const TEAM_STEPS: Step[] = [
     module: 'account',
     kind: 'brief',
     eyebrow: 'Account Management',
-    title: 'App first',
+    title: 'The Den Rewards Mobile App',
     summary:
-      'The Den Rewards app is the first recommendation for account access.',
+      'The Den Rewards app is the best way for guests to access their loyalty account.',
     bullets: [
-      'Lead with the app first',
-      'Keep the explanation short at the till',
-      'Show what it does in the next step',
+      'The mobile app allows guests to see their points history and transactions',
+      'They can rate and save their favorite products',
+      'They will receive bonus points and rewards through the app',
+    ],
+  },
+  {
+    id: 'account-signup',
+    module: 'account',
+    kind: 'brief',
+    eyebrow: 'Account Management',
+    title: 'Signing in to the App',
+    summary:
+      'When a guest first opens the app they will have to click the sign up button to set up their account. When they get to the point where they enter their phone number it will link to their transactions.',
+    bullets: [
+      'Quick & easy signup like any other app',
+      'Guests will use their phone number to link transactions to their account',
+      'They will get a message with PIN that will help them if they forget their password',
     ],
   },
   {
@@ -646,14 +660,15 @@ export const TEAM_STEPS: Step[] = [
     module: 'account',
     kind: 'brief',
     eyebrow: 'Account Management',
-    title: 'Where to get it',
+    title: 'How to Download the App',
     summary:
-      'Tell guests they get a link by message and can also download the app from the App Store or Google Play.',
+      'Let guests know they will get a message with a link to download the app on the Apple App Store or Google Play. If they miss it they can search Cascadia Liquor on their app store.',
     script:
       'The easiest way to keep track of your points and recent purchases is in the Cascadia Den Rewards App. You\'ll get the link by message.',
     bullets: [
-      'App Store and Google Play are the backup download options',
-      'Lead with the message link',
+      'Guests will receive a welcome message with information on how to download the app',
+      'We\'ll send them a reminder if they forget',
+      'They can search the app store and download it at any time',
     ],
   },
   {
@@ -661,13 +676,54 @@ export const TEAM_STEPS: Step[] = [
     module: 'account',
     kind: 'brief',
     eyebrow: 'Account Management',
-    title: 'What the app does',
+    title: 'App Features - Transactions',
     summary:
-      'The app shows points, recent transactions, favorites, and rewards.',
+      'Guests will be able to view their transaction history and point history in the app. They will also be able to give a star rating to products they have purchased. This allows them to easily remember and purchase their favorite items again.',
     bullets: [
       'See points and recent transactions',
       'Save or rate favorites',
-      'Access special rewards and bonuses',
+    ],
+  },
+  {
+    id: 'account-messaging',
+    module: 'account',
+    kind: 'brief',
+    eyebrow: 'Account Management',
+    title: 'App Features - Mobile Messaging & Notifications',
+    summary:
+      'Keep guests informed and engaged with a centralized inbox for all brand communications. By opting into push notifications, they\'ll never miss an exclusive drop, a flash sale, or a personalized birthday treat.',
+    bullets: [
+      'Centralized message center for brand updates',
+      'Real-time push notifications for exclusive deals',
+      'Easy management of communication preferences',
+    ],
+  },
+  {
+    id: 'account-profile',
+    module: 'account',
+    kind: 'brief',
+    eyebrow: 'Account Management',
+    title: 'App Features - Personalized Profiles',
+    summary:
+      'Guests can manage their personal details and preferences to ensure their experience stays relevant. From updating contact info to selecting favorite product categories, this ensures they only see the content they care about most.',
+    bullets: [
+      'Update contact and account information',
+      'Set personal product preferences',
+      'Secure login and data management',
+    ],
+  },
+  {
+    id: 'account-mobile-ordering',
+    module: 'account',
+    kind: 'brief',
+    eyebrow: 'Account Management',
+    title: 'App Features - Mobile Ordering',
+    summary:
+      'Streamline the shopping experience by allowing guests to browse the full menu and place orders directly through the app. Whether they prefer in-store pickup or curbside service, this feature reduces wait times and makes getting their favorite products faster and more convenient than ever.',
+    bullets: [
+      'Browse live menus with real-time inventory',
+      'Place orders for quick in-store pickup or delivery in select locations',
+      'Receive status updates from order placement to fulfillment',
     ],
   },
   {
@@ -730,13 +786,27 @@ export const TEAM_STEPS: Step[] = [
     module: 'account',
     kind: 'brief',
     eyebrow: 'Account Management',
-    title: 'If they do not want the app',
+    title: 'App Features - Apple & Google Wallet Pass',
     summary:
-      'Keep the app first. Offer wallet pass or web wallet only if the guest does not want the app.',
+      'For guests who prefer a lighter experience, the Wallet Pass allows them to save their loyalty card directly to their phone’s native digital wallet (Apple Wallet or Google Pay). This provides instant access to their QR code for scanning at checkout and delivers real-time point updates and push notifications without requiring the full mobile app to be installed.',
     bullets: [
-      'Wallet pass is next',
-      'Web wallet is last',
-      'Keep it short',
+      'No App Required: Guests can add their pass via a link in an SMS, email, or by scanning a QR code at the register.',
+      'Instant Updates: Point balances and reward availability refresh automatically on the digital card.',
+      'Lock Screen Notifications: Send "push-like" updates directly to the guest’s lock screen through the wallet pass.',
+    ],
+  },
+  {
+    id: 'account-web-wallet',
+    module: 'account',
+    kind: 'brief',
+    eyebrow: 'Account Management',
+    title: 'App Features - Web Wallet',
+    summary:
+      'The Web Wallet provides guests with a full-featured loyalty portal accessible through any mobile or desktop web browser. It’s the perfect "middle ground" for guests who want to manage their account, view rewards, and browse menus without downloading an app or relying solely on a digital pass. It ensures a consistent, branded experience across every device.',
+    bullets: [
+      'Browser-Based Access: Log in easily via a link on the website or through a text message.',
+      'Full Account Management: View point history, redeem rewards, and update profile details in one place.',
+      'Seamless Experience: No download required—perfect for first-time visitors or those who prefer web browsing.',
     ],
   },
   {

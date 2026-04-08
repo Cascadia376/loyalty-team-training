@@ -55,7 +55,7 @@ const initialTrainee = (): TraineeInfo => ({
 });
 
 const initialInteractionState = () => ({
-  activePath: 'team' as PathKey,
+  activePath: null as PathKey | null,
   currentStepByPath: { team: 0, manager: 0 },
   scenarioAnswers: {} as Record<string, number>,
   firstAttemptResults: {} as Record<string, boolean>,
@@ -132,7 +132,7 @@ function ProgressiveHighlights({
 export default function App() {
   const [isReady, setIsReady] = useState(false);
   const [trainee, setTrainee] = useState<TraineeInfo>(initialTrainee());
-  const [activePath, setActivePath] = useState<PathKey | null>('team');
+  const [activePath, setActivePath] = useState<PathKey | null>(null);
   const [currentStepByPath, setCurrentStepByPath] = useState<Record<PathKey, number>>({
     team: 0,
     manager: 0,
@@ -280,7 +280,7 @@ export default function App() {
             >
               <p className="topbar-kicker">The Den Rewards</p>
             </button>
-            <h1 className="topbar-title">Quick Team Guide</h1>
+            <h1 className="topbar-title">Start here</h1>
           </div>
         </header>
 
@@ -449,7 +449,7 @@ function HomeScreen({
           </div>
 
           <button type="button" className="hero-primary" onClick={onStartTraining} disabled={!canStartTraining}>
-            Team Training
+            Start training
             <ArrowRight size={18} />
           </button>
           <button type="button" className="hero-secondary-link" onClick={onOpenKnowledgeBase}>
@@ -618,7 +618,7 @@ function PathExperience({
               />
             )}
             {currentStep.script && <div className="script-card"><MessageSquareQuote size={18} className="script-icon" /><p>{currentStep.script}</p></div>}
-              {showSupportingBullets && (currentStep.bullets?.length || visibleTimedBullets.length) && (
+              {showSupportingBullets && (currentStep.bullets?.length ?? 0) + visibleTimedBullets.length > 0 && (
                 <ul className="bullet-list bullet-list-card">
                   {currentStep.bullets?.map((item) => <li key={item}>{item}</li>)}
                   {visibleTimedBullets.map((item) => <li key={item.text}><strong>{item.text}</strong></li>)}
