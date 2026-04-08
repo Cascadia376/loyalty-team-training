@@ -632,14 +632,13 @@ export const TEAM_STEPS: Step[] = [
     module: 'account',
     kind: 'brief',
     eyebrow: 'Account Management',
-    title: 'Account access',
+    title: 'App first',
     summary:
-      'After signup, send guests to the Den Rewards app first. It is the best way to check points and transactions, and guests will get a message with the download link.',
+      'The Den Rewards app is the first recommendation for account access.',
     bullets: [
-      'Den Rewards app is the primary recommendation',
-      'Guests receive a message with the app download link',
-      'Wallet pass and web wallet are secondary fallback options',
-      'Receipt balance is available if needed',
+      'Lead with the app first',
+      'Keep the explanation short at the till',
+      'Show what it does in the next step',
     ],
   },
   {
@@ -647,16 +646,83 @@ export const TEAM_STEPS: Step[] = [
     module: 'account',
     kind: 'brief',
     eyebrow: 'Account Management',
-    title: 'Recommend the App First',
+    title: 'Where to get it',
     summary:
-      'Lead with the app first. It lets guests see points, recent transactions, favorites, and special rewards.',
+      'Tell guests they get a link by message and can also download the app from the App Store or Google Play.',
     script:
-      'The best way to track your points and see your transactions is in the Den Rewards app. It also lets guests save favorites and unlock special rewards and bonuses. You can download it from the App Store or Google Play, and you\'ll also get a message with a link to download it.',
+      'The easiest way to keep track of your points and recent purchases is in the Cascadia Den Rewards App. You\'ll get the link by message.',
     bullets: [
-      'Use this as the first recommendation for rewards activity',
-      'Keep the tone natural at the till',
-      'Mention App Store and Google Play when asked where to get it',
-      'Point out favorites and special rewards as app benefits',
+      'App Store and Google Play are the backup download options',
+      'Lead with the message link',
+    ],
+  },
+  {
+    id: 'account-web-wallet',
+    module: 'account',
+    kind: 'brief',
+    eyebrow: 'Account Management',
+    title: 'What the app does',
+    summary:
+      'The app shows points, recent transactions, favorites, and rewards.',
+    bullets: [
+      'See points and recent transactions',
+      'Save or rate favorites',
+      'Access special rewards and bonuses',
+    ],
+  },
+  {
+    id: 'account-access-check',
+    module: 'account',
+    kind: 'scenario',
+    eyebrow: 'Account Management',
+    title: 'Check points later',
+    summary: 'Lead with the app first and keep the answer short.',
+    prompt:
+      'A guest asks how they can check their points later. What should you say?',
+    options: [
+      {
+        text: 'You can check your receipt later if you need to.',
+        correct: false,
+        feedback: 'Not correct. That starts with a fallback and leaves out the app. Lead with the app and keep it brief.',
+      },
+      {
+        text: 'The easiest way to keep track of your points and recent purchases is in the Cascadia Den Rewards App. You\'ll get a message with the link to download it.',
+        correct: true,
+        feedback: 'Correct. That leads with the app and gives the guest the download link in one short answer.',
+      },
+      {
+        text: 'We can look it up after checkout if that works better.',
+        correct: false,
+        feedback: 'Not correct. That delays the answer and weakens the app recommendation. Keep it app-first and immediate.',
+      },
+    ],
+  },
+  {
+    id: 'account-module-quiz-4',
+    module: 'account',
+    kind: 'scenario',
+    eyebrow: 'Account Management',
+    title: 'Scenario practice',
+    summary:
+      'Use the app-first flow in one checkout conversation.',
+    prompt:
+      'A guest joins while the line builds. They ask how many points they will earn today and whether they can use them right away. What should you say?',
+    options: [
+      {
+        text: 'You can use the points right away once the app link comes through, so I\'d download it now and apply them today.',
+        correct: false,
+        feedback: 'Not correct. That gives the guest the wrong timing for redemption. Keep it accurate and point them to the app for tracking.',
+      },
+      {
+        text: 'You\'ll get about $1 back for every $100, and I can show you the rest on your receipt after checkout.',
+        correct: false,
+        feedback: 'Not correct. That sounds uncertain and shifts the focus away from the app. Lead with the simple value and the download message.',
+      },
+      {
+        text: 'You\'ll earn 10 points for every $1 spent. The points are for a future visit, and you\'ll get a message with the app link.',
+        correct: true,
+        feedback: 'Correct. That keeps the answer clear, app-first, and easy to use at the till.',
+      }
     ],
   },
   {
@@ -666,11 +732,11 @@ export const TEAM_STEPS: Step[] = [
     eyebrow: 'Account Management',
     title: 'If they do not want the app',
     summary:
-      'Keep the app first, then offer wallet pass or web wallet only if the guest does not want to download it.',
+      'Keep the app first. Offer wallet pass or web wallet only if the guest does not want the app.',
     bullets: [
-      'Wallet pass is the next fallback',
-      'Web wallet is the last fallback',
-      'Keep the explanation short and practical',
+      'Wallet pass is next',
+      'Web wallet is last',
+      'Keep it short',
     ],
   },
   {
@@ -678,138 +744,13 @@ export const TEAM_STEPS: Step[] = [
     module: 'account',
     kind: 'brief',
     eyebrow: 'Account Management',
-    title: 'Wallet pass',
+    title: 'Keep it simple',
     summary:
-      'Use wallet pass only if the guest does not want the app.',
+      'Keep the app first. Do not list every option at once.',
     bullets: [
-      'Use it only after the app offer',
-      'Keep it as the next fallback option',
-      'Use it for quick lookup at checkout',
-    ],
-  },
-  {
-    id: 'account-web-wallet',
-    module: 'account',
-    kind: 'brief',
-    eyebrow: 'Account Management',
-    title: 'Web wallet',
-    summary:
-      'Use the web wallet only when the guest does not want the app or wallet pass.',
-    bullets: [
-      'Use it only after the app and wallet pass',
-      'Keep it as the last fallback option',
-      'Use it to view points and account details',
-    ],
-  },
-  {
-    id: 'account-access-check',
-    module: 'account',
-    kind: 'scenario',
-    eyebrow: 'Account Management',
-    title: 'Module quiz',
-    summary: 'Give a clear app-first answer when a guest asks how to check later.',
-    prompt:
-      'A guest asks how they can check their points later while you are ringing them through. What should the team member say?',
-    options: [
-      {
-        text: 'The Den Rewards app is the best way to check your points and transactions. You will receive a message with the link to download it.',
-        correct: true,
-        feedback: 'Correct. That leads with the app, keeps the explanation simple, and points the guest to the download message.',
-      },
-      {
-        text: 'You can check your receipt or loyalty account later if you need to.',
-        correct: false,
-        feedback: 'Not correct. That starts with fallback options and sounds too vague. Lead with the app first and keep the rest brief.',
-      },
-      {
-        text: 'You may need to wait until after checkout, then we can look it up for you.',
-        correct: false,
-        feedback: 'Not correct. That delays the answer and misses the app-first guidance. Tell them about the app and the download message right away.',
-      },
-    ],
-  },
-  {
-    id: 'account-module-quiz-2',
-    module: 'account',
-    kind: 'scenario',
-    eyebrow: 'Account Management',
-    title: 'Module quiz',
-    summary:
-      'Keep post-signup guidance practical and easy to follow.',
-    prompt:
-      'A guest wants to check their rewards activity and asks what they should use. Which option should staff position first?',
-    options: [
-      {
-        text: 'The wallet pass is probably the fastest option.',
-        correct: false,
-        feedback: 'Not correct. That puts a fallback ahead of the app and weakens the recommendation. Start with the app, then offer wallet pass if needed.',
-      },
-      {
-        text: 'The Cascadia Den Rewards App.',
-        correct: true,
-        feedback: 'Correct. The app is the primary account-management option and the best place to check points and transactions.',
-      },
-      {
-        text: 'The web wallet is the easiest way to get started.',
-        correct: false,
-        feedback: 'Not correct. That leads with a fallback instead of the app. Recommend the app first and keep the backup options secondary.',
-      }
-    ],
-  },
-  {
-    id: 'account-module-quiz-3',
-    module: 'account',
-    kind: 'scenario',
-    eyebrow: 'Account Management',
-    title: 'Module quiz',
-    summary:
-      'Finish by choosing the right staff response to technical questions.',
-    prompt:
-      'A guest is stuck while setting up the app or wallet after checkout. What should staff do?',
-    options: [
-      {
-        text: 'Try a couple of basic steps and see if it resolves the issue.',
-        correct: false,
-        feedback: 'Not correct. Guessing at fixes can confuse the guest and waste time. Escalate to the manager when it needs deeper help.',
-      },
-      {
-        text: 'Tell the guest you will need to ask someone who knows the setup better.',
-        correct: false,
-        feedback: 'Not correct. That avoids the issue but does not give the guest a clear next step. Route it to the manager directly.',
-      },
-      {
-        text: 'Escalate the technical question to the store manager when needed.',
-        correct: true,
-        feedback: 'Correct. That matches the training guidance for technical help.',
-      }
-    ],
-  },
-  {
-    id: 'account-module-quiz-4',
-    module: 'account',
-    kind: 'scenario',
-    eyebrow: 'Account Management',
-    title: 'Final scenario',
-    summary:
-      'Use everything together in one short checkout conversation.',
-    prompt:
-      'A guest says yes to joining while the line builds behind them. They ask how many points they will earn today and whether they can use them right away. What should you say?',
-    options: [
-      {
-        text: 'You\'ll earn 10 points for every $1 spent, and the points are ready to use on a future visit. You\'ll get a message with a link to download the Den Rewards app, and that\'s the best way to track your points and transactions.',
-        correct: true,
-        feedback: 'Correct. That keeps the answer clear, app-first, and easy to use at the till.',
-      },
-      {
-        text: 'You\'ll get about $1 back for every $100, and I can show you the rest on your receipt after checkout.',
-        correct: false,
-        feedback: 'Not correct. That sounds uncertain and shifts the focus away from the app. Lead with the simple value and the download message.',
-      },
-      {
-        text: 'You can use the points right away once the app link comes through, so I\'d download it now and apply them today.',
-        correct: false,
-        feedback: 'Not correct. That gives the guest the wrong timing for redemption. Keep it accurate: points are for a future visit, and the app is best for tracking.',
-      }
+      'Lead with the app',
+      'Do not overexplain',
+      'Keep backups secondary',
     ],
   },
   {
@@ -817,16 +758,14 @@ export const TEAM_STEPS: Step[] = [
     module: 'account',
     kind: 'signoff',
     eyebrow: 'Complete Training',
-    title: 'Submit your completion',
+    title: 'Final reinforcement',
     summary:
-      'Finish training so your store can track who is ready. Invite once, keep it brief, do not push after a no, and recommend the app first.',
+      'App first. Message link. Points and recent transactions in the app. Fallbacks only if the guest does not want it.',
     checklist: [
-      'I know the standard invitation',
-      'I know what to say when a guest says no',
-      'I know the short version for busy periods',
-      'I know the steps to enroll a guest',
-      'I know the Den Rewards app is the first recommendation for account access',
-      'I know guests receive a message with the app download link',
+      'App first',
+      'Link by message',
+      'App for points and recent transactions',
+      'Fallbacks only if the guest does not want the app',
     ],
   },
 ];
