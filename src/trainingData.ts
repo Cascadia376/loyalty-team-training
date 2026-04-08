@@ -135,36 +135,59 @@ export const FAQ_SECTIONS: FaqSection[] = [
     title: 'Program Basics',
     items: [
       {
-        question: 'What is The Den Rewards program?',
-        guestAnswer:
-          'The Den Rewards is a free program where guests earn points on every visit and use them later for money off.',
-        teamNote: 'Keep it simple: join, earn points, redeem later.',
+        question: 'What is the Cascadia Loyalty Program?',
+        guestAnswer: `Short Answer (Guest-Friendly)
+"Our loyalty program rewards you every time you shop. You earn points on your purchases and can redeem them for money off future visits."`,
+        teamNote: `Suggested Team Members Explanation
+• Guests earn points every time they shop.
+• Those points can be redeemed for money off future purchases.
+• The more guests shop, the faster they earn rewards and move into higher tiers.`,
       },
       {
-        question: 'How do guests earn points, and what are they worth?',
-        guestAnswer:
-          'Guests earn 10 points for every $1 spent. Every 1,000 points equals $1.',
-        teamNote:
-          'A simple shortcut is "about $1 back for every $100 spent." Avoid detailed math unless asked.',
-      },
-      {
-        question: 'What are the tiers?',
-        guestAnswer:
-          'Cub earns 10 points per dollar, Black Bear earns 12 points per dollar, and Grizzly earns 15 points per dollar.',
+        question: 'How do guests earn points? What are they worth?',
+        guestAnswer: `Program Rule
+• Guests earn 10 points for every $1 spent.
+• 1,000 points = $1 in rewards`,
+        teamNote: `Suggested Team Members Wording
+"You earn 10 points for every dollar you spend. Once you collect enough points, you can redeem them for money off your purchases."
+Simple Way to Explain the Value
+"For every $100 you spend, you earn about $1 in rewards."
+This keeps the explanation simple and easy to understand.
+"Every 1,000 points equals $1 in rewards that you can use toward a future purchase."`,
       },
       {
         question: 'How long does a tier last?',
-        guestAnswer: 'Once a guest reaches a tier, they keep that status for a full year.',
+        guestAnswer: `Program Rule
+• Once guests reach a tier, it stays active for one full year.`,
+        teamNote: `Suggested Team Members Wording
+"When you reach a tier, you keep that status for a full year."`,
       },
       {
-        question: 'Is there a signup bonus?',
-        guestAnswer:
-          DEN_REWARDS_PROMO?.signupBonusAnswer ?? 'No active signup bonus right now.',
+        question: 'What happens to points if an account is inactive?',
+        guestAnswer: `Program Rule
+• Accounts with no activity for 2 years will expire.`,
+        teamNote: `Suggested Team Members Wording
+"As long as the account stays active, the points stay active too. If there’s no activity for two years, the account will expire.
+We’ll send a reminder one month before your points expire, and again one week before."`,
       },
       {
-        question: 'Do points expire?',
+        question: 'Are there signup bonuses',
+        guestAnswer: `Yes.
+Early Signup Bonus
+Guests who sign up shortly after launch receive:
+• 5,000 bonus points
+Pre-Launch Bonus
+Guests who join before the official launch receive an additional:
+• 2,500 bonus points
+Total Possible Bonus
+• 7,500 points ($7.50 value)`,
+        teamNote: `Suggested Team Members Wording
+"If you sign up early, you’ll receive bonus points just for joining."`,
+      },
+      {
+        question: 'What if a guest asks how valuable the program is?',
         guestAnswer:
-          'Points stay active as long as the account stays active. If there is no activity for two years, the account expires.',
+          `"Most guests earn about $1 back for every $100 they spend, and you earn rewards faster as you move into higher tiers."`,
       },
     ],
   },
@@ -174,28 +197,51 @@ export const FAQ_SECTIONS: FaqSection[] = [
       {
         question: 'Can points be used on alcohol?',
         guestAnswer:
-          'Yes. Points can be used like money toward most purchases in the store.',
-        teamNote: 'Tobacco, lottery, and bottle deposits are excluded.',
+          `Suggested answer:
+"Yes. Points can be used just like money toward most purchases in the store."`,
+        teamNote: 'NOTE: Tobacco, Lottery, and Bottle Deposits are excluded.',
       },
       {
         question: 'Can a guest use points right away?',
         guestAnswer:
-          'Points are ready on the next visit. They cannot be earned and redeemed the same day.',
-        teamNote: 'Points become available about 24 hours after the purchase.',
+          `Suggested answer:
+"Points are ready to use on your next visit. They can’t be earned and redeemed on the same day, but 24 hours from the time of purchase."`,
       },
       {
         question: 'Does a guest lose their tier if they stop shopping?',
         guestAnswer:
-          'No. Once a guest reaches a tier, they keep it for a full year from the date they reached it.',
+          `Suggested answer:
+"Once you reach a tier, you keep it for a full year from the date you reached the tier. Continuing to shop helps you maintain or increase your tier."`,
       },
       {
         question: 'How can a guest check their points?',
         guestAnswer:
-          'The Den Rewards app is the best way to check points and view transactions. Guests will get a message with the link to download it. Receipt and loyalty account are backup options if needed.',
+          `Suggested answer:
+"Your points balance can be viewed through your loyalty account online, through the app, and when you add the program to your phone’s wallet."`,
       },
       {
-        question: 'What if a guest forgot they were a member?',
-        guestAnswer: 'Look up the account using the guest\'s phone number.',
+        question: 'But can a team member share my points balance with me when I am in a store?',
+        guestAnswer:
+          `Suggested answer:
+"No. Points are only visible through the app or your online account. Account information is restricted to management."`,
+      },
+      {
+        question: 'Can I use just 1,000 points on a purchase?',
+        guestAnswer:
+          `Suggested answer:
+"There is a minimum spend of 5,000 points. Then you can use points in 1,000 or 5,000 increments."`,
+      },
+      {
+        question: 'Do I earn points when I purchase a gift card?',
+        guestAnswer:
+          `Suggested answer:
+"No. Points are not earned on the gift card purchase. However, points are earned when you use a gift card as tender."`,
+      },
+      {
+        question: 'Do points expire?',
+        guestAnswer:
+          `Suggested answer:
+"Points stay active as long as the account is active. If there’s no activity for two years, the account will expire."`,
       },
     ],
   },
@@ -205,17 +251,26 @@ export const FAQ_SECTIONS: FaqSection[] = [
       {
         question: 'What if points do not appear immediately?',
         guestAnswer:
-          'Points appear after checkout and are available on the next visit.',
+          `Suggested response:
+"Points will appear on your account after the transaction is completed. They will be available for your next visit."`,
       },
       {
         question: 'What if the guest wants to redeem but does not have enough points?',
         guestAnswer:
-          'Tell them they are close and probably only need another visit or two.',
+          `Suggested response:
+"It looks like you’re close to your first reward. After another visit or two you’ll likely have enough points to start redeeming."`,
+      },
+      {
+        question: 'What if the guest forgot they were a member?',
+        guestAnswer:
+          `Suggested response:
+"No problem — we can look up your account using your phone number."`,
       },
       {
         question: 'What if the guest asks why they cannot redeem today?',
         guestAnswer:
-          'Points are for the next visit so every guest earns rewards the same way.',
+          `Suggested response:
+"Points activate for your next visit so everyone earns rewards the same way."`,
       },
       {
         question: 'What details are required for signup?',
@@ -225,26 +280,121 @@ export const FAQ_SECTIONS: FaqSection[] = [
     ],
   },
   {
-    title: 'How To Talk About It',
+    title: 'How to Encourage Signups at Checkout',
     items: [
       {
-        question: 'What is the best checkout invitation?',
-        guestAnswer: `Use the standard invitation: "${DEN_REWARDS_PROMO?.standardInvite ?? 'Have you signed up for our new loyalty program? Can I set that up for you?'}"`,
+        question: '10 Second Signup Invitation',
+        guestAnswer:
+          `Suggested script:
+"Are you part of our new loyalty program yet? You earn points every time you shop and can use them for money off future purchases."`,
         teamNote: 'Keep it natural and conversational, not salesy.',
       },
       {
-        question: 'What should I say when the store is busy?',
-        guestAnswer: `Use the short version: "${DEN_REWARDS_PROMO?.busyInvite ?? 'We just launched our new loyalty program. Here is a QR code if you\'d like to join.'}"`,
+        question: 'If the guest shows interest:',
+        guestAnswer:
+          `Suggested script:
+"It only takes a moment to join, and you’ll receive bonus points just for signing up."`,
       },
       {
-        question: 'What should I say if the guest says no?',
+        question: 'When the Store Is Busy',
         guestAnswer:
-          'Say: "That\'s okay! Here is a QR code if you\'d like to sign up later."',
+          `Short version:
+"Want to earn points on today’s purchase?"`,
+      },
+      {
+        question: 'When a Guest Is a Regular',
+        guestAnswer:
+          `Suggested script:
+"You shop here often — our new loyalty program lets you earn rewards every time you visit."`,
+      },
+    ],
+  },
+  {
+    title: "Team Members' Tips for Driving Adoption",
+    items: [
+      {
+        question: 'What should team members remember?',
+        guestAnswer:
+          `• Mention the program naturally during checkout
+• Focus on the signup bonus
+• Keep the explanation simple
+• Avoid explaining point math unless asked`,
+      },
+      {
+        question: 'Best summary for guests',
+        guestAnswer:
+          `"Earn points every time you shop and redeem them for money off later."`,
+      },
+    ],
+  },
+  {
+    title: 'CADDY BAY',
+    items: [
+      {
+        question: '1. What happens with Caddy Bay points?',
+        guestAnswer:
+          `Caddy Bay points will convert into The Den Rewards.
+Conversion Rule
+• 5 Caddy Bay points convert to 1 Den Reward point`,
+        teamNote:
+          `Suggested Team Members Wording
+"If you have points from Caddy Bay, they’ll convert into Den Rewards points so you can keep using them."`,
+      },
+      {
+        question: '2. Caddy Bay Points Conversion',
+        guestAnswer:
+          `This section helps team members explain how existing Caddy Bay points will transition into the new Cascadia loyalty program.
+
+Key Message for Guests
+The most important point to communicate is that guests will not lose their rewards.
+Caddy Bay points will convert into Cascadia loyalty points so they can continue earning and redeeming rewards across Cascadia stores.
+
+Simple Explanation (Recommended Default)
+Suggested script:
+"Your Caddy Bay points will convert into Cascadia loyalty points, so you won’t lose any rewards. Once the new program launches, you’ll be able to keep earning and redeeming them at all Cascadia locations."
+
+If a Guest Asks How the Conversion Works
+Suggested script:
+"Caddy Bay points convert into Cascadia points at a rate of five to one. The value stays the same, so your rewards carry over into the new program."
+
+If a Guest Asks Whether They Will Lose Points
+Suggested script:
+"No — your Caddy Bay points will transfer into Cascadia loyalty points so you can keep using them."`,
+      },
+      {
+        question: 'Example Team Members Can Use',
+        guestAnswer:
+          `If a guest wants a simple example:
+"For example, if you had 5,000 Caddy Bay points, they would convert into 1,000 Cascadia points, which is worth $1 in rewards."`,
+      },
+      {
+        question: 'Best Way to Introduce the Change to Regular Guests',
+        guestAnswer:
+          `Suggested script:
+"We’re moving to a new Cascadia loyalty program that works across all our stores. Your Caddy Bay points will convert automatically, so you can keep using them."`,
+      },
+      {
+        question: 'Key Messages Team Members Should Emphasize',
+        guestAnswer:
+          `When discussing the conversion, focus on these points:
+• Points transfer automatically
+• Guests do not lose value
+• The new program works across all Cascadia locations`,
+      },
+      {
+        question: 'What Team Members Should Avoid',
+        guestAnswer:
+          `To prevent confusion, team members should avoid:
+• Explaining detailed point math
+• Comparing old and new earn rates
+• Discussing system conversion details`,
+        teamNote:
+          `If guests ask complex questions, team members can respond with:
+"The new program works very similarly, and your rewards transfer over so you can keep using them."`,
       },
     ],
   },
 ];
-
 export const TEAM_STEPS: Step[] = [
   {
     id: 'basics-invitation',
