@@ -30,3 +30,15 @@ This project is ready to import directly into Vercel.
 - Output directory: `dist`
 
 The project also includes [vercel.json](./vercel.json) with the expected build settings.
+
+## Google Sheets completion tracking
+
+The training completion flow posts to a Google Apps Script webhook that appends rows to a Google Sheet.
+
+1. Create a Google Sheet and add headers such as:
+   `completedAt | traineeFirstName | traineeLastName | traineeName | store | startedAt | completionScore | basicsComplete | posComplete | accountComplete | firstAttemptResultsJson`
+2. In Google Sheets, open `Extensions > Apps Script` and publish a web app that accepts `POST` requests.
+3. Set the Vercel environment variable `GOOGLE_SHEETS_WEBHOOK_URL` to the Apps Script deployment URL.
+4. Redeploy the app after setting the env var.
+
+If the webhook is not configured, the app will show a clear error when a trainee tries to submit completion.

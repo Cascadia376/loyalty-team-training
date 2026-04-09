@@ -37,6 +37,8 @@ interface TraineeInfo {
 }
 
 interface CompletionPayload {
+  traineeFirstName: string;
+  traineeLastName: string;
   traineeName: string;
   store: string;
   startedAt: string;
@@ -229,6 +231,8 @@ export default function App() {
     setSubmissionMessage('');
 
     const payload: CompletionPayload = {
+      traineeFirstName: trainee.firstName.trim(),
+      traineeLastName: trainee.lastName.trim(),
       traineeName: `${trainee.firstName.trim()} ${trainee.lastName.trim()}`.trim(),
       store: normalizedStore,
       startedAt: trainee.startedAt,
