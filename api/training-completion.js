@@ -5,6 +5,8 @@ export default async function handler(req, res) {
   }
 
   const {
+    traineeFirstName,
+    traineeLastName,
     traineeName,
     store,
     startedAt,
@@ -14,8 +16,16 @@ export default async function handler(req, res) {
     firstAttemptResults,
   } = req.body || {};
 
-  if (!traineeName || !store || !startedAt || !completedAt) {
+  if (!store || !startedAt || !completedAt) {
     return res.status(400).json({ message: 'Missing required completion fields.' });
+  }
+
+  const fullName =
+    traineeName ||
+    `${traineeFirstName || ''} ${traineeLastName || ''}`.trim();
+
+  if (!fullName) {
+    return res.status(400).json({ message: 'Missing trainee name fields.' });
   }
 
   const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
@@ -30,7 +40,9 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        traineeName,
+        traineeName: fullName,
+        traineeFirstName: traineeFirstName || '',
+        traineeLastName: traineeLastName || '',
         store,
         startedAt,
         completedAt,
