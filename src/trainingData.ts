@@ -938,11 +938,11 @@ export const TEAM_STEPS: Step[] = [
     eyebrow: 'Account Management',
     title: 'App Features - Apple & Google Wallet Pass',
     summary:
-      'For guests who prefer a lighter experience, the Wallet Pass allows them to save their loyalty card directly to their phone’s native digital wallet (Apple Wallet or Google Pay). This provides instant access to their QR code for scanning at checkout and delivers real-time point updates and push notifications without requiring the full mobile app to be installed.',
+      'For guests who prefer a lighter experience, the Wallet Pass allows them to save their loyalty card directly to their phone’s native digital wallet (Apple Wallet or Google Wallet). This provides instant access to their loyalty card and delivers real-time point updates and push notifications without requiring the full mobile app to be installed.',
     bullets: [
-      'No App Required: Guests can add their pass via a link in an SMS, email, or by scanning a QR code at the register.',
+      'No App Required: Guests can add their pass via a link in an SMS or email, or by following the wallet prompt on their phone.',
       'Instant Updates: Point balances and reward availability refresh automatically on the digital card.',
-      'Lock Screen Notifications: Send "push-like" updates directly to the guest’s lock screen through the wallet pass.',
+      'Lock Screen Notifications: Send "push-like" updates directly to the guest\'s lock screen through the wallet pass.',
     ],
   },
   {
@@ -1021,3 +1021,4 @@ export const PATHS: PathDefinition[] = [
   { key: 'team', label: 'Team Member', steps: TEAM_STEPS },
   { key: 'manager', label: 'Manager', steps: MANAGER_STEPS },
 ];
+
