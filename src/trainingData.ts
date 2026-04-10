@@ -608,7 +608,7 @@ export const TEAM_STEPS: Step[] = [
     ],
     bullets: [
       'Guests earn points today and use them on a future visit',
-      'Use simple value language first',
+      'Points are credited to their account the next day',
       'Redemption starts at 5,000 points on a $20 purchase',
       'Phone number is the fastest account lookup',
     ],
