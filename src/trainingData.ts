@@ -82,7 +82,7 @@ const DEN_REWARDS_PROMO = isActiveThroughDate(PROMO_END_DATE)
   : null;
 
 export const STORE_OPTIONS = [
-  'Crown Isle',
+  'Courtenay',
   'Port Alberni',
   'Parksville',
   'Nanoose Bay',
