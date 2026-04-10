@@ -604,11 +604,12 @@ export const TEAM_STEPS: Step[] = [
     highlights: [
       { label: 'Earn rate', value: '10 pts / $1' },
       { label: 'Reward value', value: '1,000 pts = $1' },
-      { label: 'Redemption', value: '5,000 pts = $5 off', note: '10,000 pts = $10 off' },
+      { label: 'Redemption', value: '5,000 pts = $5 off', note: 'Minimum purchase: $20' },
     ],
     bullets: [
       'Guests earn points today and use them on a future visit',
       'Use simple value language first',
+      'Redemption starts at 5,000 points on a $20 purchase',
       'Phone number is the fastest account lookup',
     ],
   },
